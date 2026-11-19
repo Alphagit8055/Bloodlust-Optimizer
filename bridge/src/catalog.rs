@@ -109,9 +109,12 @@ pub fn sha256_hex(bytes: &[u8]) -> String {
 pub fn fetch(url: &str, allowed_hosts: &[&str]) -> Result<CatalogPayload, CatalogError> {
     validate_url(url, allowed_hosts)?;
 
-    let response = ureq::get(url)
+    let agent = ureq::builder()
         .timeout_connect(std::time::Duration::from_secs(10))
         .timeout_read(std::time::Duration::from_secs(20))
+        .build();
+    let response = agent
+        .get(url)
         .call()
         .map_err(|e| CatalogError::Fetch(e.to_string()))?;
 

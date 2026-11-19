@@ -70,6 +70,14 @@ jobs:
         working-directory: bridge
         run: cargo test --locked || cargo test
 
+      # The Tauri shell enables the bridge's `http` feature, so plain
+      # `cargo test` never compiles that path. Check it here so a
+      # release-only compile error fails fast, not at tag time.
+      - name: cargo check (bridge with http feature)
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: bridge
+        run: cargo check --locked --features http
+
   # ------------------------------------------------------------- the release
   build:
     name: Build Windows installer
