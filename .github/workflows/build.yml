@@ -115,7 +115,7 @@ jobs:
           $cfg = Get-Content src-tauri/tauri.conf.json -Raw | ConvertFrom-Json
           $key = $cfg.plugins.updater.pubkey
           if (-not $key -or $key -like 'REPLACE_WITH*') {
-            Write-Host "::error::plugins.updater.pubkey is still the placeholder. Run 'npx tauri signer generate' and paste the public key into src-tauri/tauri.conf.json."
+            Write-Host "::error::plugins.updater.pubkey is still the placeholder. Run 'npx @tauri-apps/cli@^2 signer generate' and paste the public key into src-tauri/tauri.conf.json."
             exit 1
           }
           Write-Host "updater public key is configured"

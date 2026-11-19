@@ -137,6 +137,10 @@ minutes.
 [docs/GITHUB-SETUP.md](docs/GITHUB-SETUP.md) — repository, updater signing key,
 secrets, and the tag that produces a release.
 
+[docs/BUILD-AND-RELEASE.md](docs/BUILD-AND-RELEASE.md) — step-by-step for
+producing the `.exe`, either through GitHub Actions or on your own Windows PC,
+plus troubleshooting.
+
 ---
 
 ## Security

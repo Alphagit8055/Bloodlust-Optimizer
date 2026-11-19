@@ -73,7 +73,7 @@ The auto-updater verifies a signature before installing anything. Without this,
 a build will not publish.
 
 ```bash
-npx tauri signer generate -w ~/.tauri/bloodlust.key
+npx @tauri-apps/cli@^2 signer generate -w ~/.tauri/bloodlust.key
 ```
 
 You get two things:

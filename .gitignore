@@ -23,6 +23,10 @@ Cargo.lock
 src-tauri/gen/
 src-tauri/WixTools/
 
+# NOTE: src-tauri/icons/ must NOT be ignored. tauri.conf.json references those
+# files by path and `tauri build` fails hard if they are missing. Regenerate
+# them with `python scripts/make_icons.py` if they ever go astray.
+
 # --- Node (only used for the signer) ---
 node_modules/
 

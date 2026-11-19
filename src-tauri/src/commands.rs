@@ -133,15 +133,21 @@ fn resolve_sidecar(app: &AppHandle) -> std::result::Result<(PathBuf, Vec<String>
         }
     }
 
-    // Also honour the resource dir, where tauri.conf.json can place it.
+    // Also honour the resource dir, where tauri.conf.json places it.
+    //
+    // The bundle ships the engine at `sidecar/bloodlust-sidecar[_exe]`, so the
+    // nested path is checked first. Only checking the resource root silently
+    // missed the engine in a release install even though it was packaged.
     if let Ok(resource) = app.path().resource_dir() {
-        let c = resource.join(if cfg!(windows) {
+        let name = if cfg!(windows) {
             "bloodlust-sidecar.exe"
         } else {
             "bloodlust-sidecar"
-        });
-        if c.is_file() {
-            return Ok((c, Vec::new()));
+        };
+        for c in [resource.join("sidecar").join(name), resource.join(name)] {
+            if c.is_file() {
+                return Ok((c, Vec::new()));
+            }
         }
     }
 
