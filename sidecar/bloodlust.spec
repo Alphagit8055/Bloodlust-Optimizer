@@ -13,7 +13,13 @@ CATALOG = ROOT / "catalog" / "catalog.json"
 if not CATALOG.is_file():
     raise SystemExit(f"bundled catalog not found at {CATALOG}")
 
-# NOTE: the entry point is the shim, NOT bloodlust/__main__.py. Running
+# NOTE: the spec builds a windowed (console=False) engine. The JSON-RPC channel
+# keeps working: the shell spawns the engine with its stdio handles explicitly
+# piped, and a PyInstaller windowed bootloader inherits valid handles just like
+# a console one — the only difference is no console window is created for the
+# child. Verified locally by piping a hand-written PING into the frozen exe.
+#
+# The entry point is the shim, NOT bloodlust/__main__.py. Running
 # __main__.py directly breaks every relative import inside the package.
 a = Analysis(
     [str(HERE / "entrypoint.py")],
@@ -66,7 +72,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=False,
-    console=True,          # required: stdout is the JSON-RPC channel
+    console=False,         # no console window for the engine; stdout still works — see note below
     disable_windowed_traceback=False,
     argv_emulation=False,
     icon=None,
