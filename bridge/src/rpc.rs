@@ -93,10 +93,19 @@ impl Sidecar {
         let mut cmd = Command::new(program);
         cmd.args(args)
             .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            // stderr stays inherited so the engine's logs reach the console in
-            // dev and the packaged log collector in production.
-            .stderr(Stdio::inherit());
+            .stdout(Stdio::piped());
+        // stderr: inherit in dev (a terminal shows it); in release there is no
+        // console, so `inherit` silently discards the engine's output —
+        // including the traceback when the engine dies on startup. Capture it.
+        if cfg!(debug_assertions) {
+            cmd.stderr(Stdio::inherit());
+        } else {
+            let log = std::fs::File::create(std::env::temp_dir().join("bloodlust-engine.log"));
+            match log {
+                Ok(f) => cmd.stderr(Stdio::from(f)),
+                Err(_) => cmd.stderr(Stdio::null()),
+            };
+        }
 
         let mut child = cmd.spawn().map_err(|e| RpcError::Spawn(e.to_string()))?;
 
