@@ -74,6 +74,17 @@ jobs:
         working-directory: bridge
         run: cargo test --locked || cargo test
 
+      # tauri.conf.json bundles src-tauri/sidecar/bloodlust-sidecar.exe as a
+      # resource, and tauri-build fails the whole build if it is missing. The
+      # exe is git-ignored and produced by scripts/build_sidecar.py in the
+      # release job, so stage a throwaway placeholder here — this is a compile
+      # check, not a package, and nothing from the test job is published.
+      - name: Stage a placeholder sidecar for tauri-build
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force src-tauri/sidecar | Out-Null
+          Set-Content -Path src-tauri/sidecar/bloodlust-sidecar.exe -Value 'placeholder' -NoNewline
+
       # The Tauri shell's command layer only gets compiled at tag time otherwise.
       - name: cargo check (Tauri shell)
         working-directory: src-tauri
