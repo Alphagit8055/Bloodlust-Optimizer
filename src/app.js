@@ -17,6 +17,8 @@ const state = {
   ceiling: "safe",
   undo: [],
   view: "actions",
+  query: "",
+  tag: null,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -71,6 +73,14 @@ function ceilingBlocks(risk) {
   return RISK_ORDER.indexOf(risk) > RISK_ORDER.indexOf(state.ceiling);
 }
 
+function labelFor(id) {
+  const hit = state.actions.find((a) => a.id === id);
+  if (hit) return hit.label;
+  return String(id || "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 /* ------------------------------------------------------------------ families */
 
 function renderFamilies() {
@@ -90,9 +100,59 @@ function renderFamilies() {
 function selectFamily(id) {
   state.activeFamily = id;
   state.view = "actions";
+  state.query = "";
+  state.tag = null;
+  const box = $("action-search");
+  if (box) box.value = "";
   showView("actions");
   renderFamilies();
   renderActions();
+}
+
+/* --------------------------------------------------------------- filtering */
+
+function actionMatches(action) {
+  if (state.tag && !(action.tags || []).includes(state.tag)) return false;
+  const q = state.query.trim().toLowerCase();
+  if (!q) return true;
+  const hay = [action.label, action.description, ...(action.tags || [])]
+    .join(" ")
+    .toLowerCase();
+  return q.split(/\s+/).every((word) => hay.includes(word));
+}
+
+function renderTagChips(list) {
+  const host = $("tag-chips");
+  if (!host) return;
+  host.innerHTML = "";
+  if (!list.length) return;
+
+  const counts = new Map();
+  for (const action of list) {
+    for (const tag of action.tags || []) {
+      counts.set(tag, (counts.get(tag) || 0) + 1);
+    }
+  }
+  const top = [...counts.entries()]
+    .filter(([, n]) => n >= 2)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 8)
+    .map(([tag]) => tag);
+  if (!top.length) return;
+
+  const chip = (label, value, cls) => {
+    const el = document.createElement("button");
+    el.className = `chip ${cls || ""}` + (state.tag === value ? " on" : "");
+    el.textContent = label;
+    el.onclick = () => {
+      state.tag = state.tag === value ? null : value;
+      renderActions();
+    };
+    host.appendChild(el);
+  };
+
+  chip("All", null, "chip-all");
+  for (const tag of top) chip(tag, tag);
 }
 
 /* ------------------------------------------------------------------- actions */
@@ -106,15 +166,23 @@ function renderActions() {
   host.innerHTML = "";
 
   const list = state.actions.filter((a) => a.family === state.activeFamily);
+  renderTagChips(list);
   if (!list.length) {
     host.innerHTML = `<p class="muted">No actions in this family.</p>`;
+    $("batch-note").textContent = "";
     return;
   }
 
-  for (const action of list) host.appendChild(cardFor(action));
+  const shown = list.filter(actionMatches);
+  if (!shown.length) {
+    host.innerHTML = `<p class="muted">Nothing in this family matches that filter.</p>`;
+  } else {
+    for (const action of shown) host.appendChild(cardFor(action));
+  }
 
   const available = list.filter((a) => a.available).length;
-  $("batch-note").textContent = `${available} of ${list.length} available here`;
+  const filtered = shown.length === list.length ? "" : `${shown.length} shown · `;
+  $("batch-note").textContent = `${filtered}${available} of ${list.length} available here`;
 }
 
 function cardFor(action) {
@@ -131,8 +199,7 @@ function cardFor(action) {
 
   const titleWrap = document.createElement("div");
   titleWrap.className = "card-title";
-  titleWrap.innerHTML =
-    `${escapeHtml(action.label)}<span class="card-id">${escapeHtml(action.id)}</span>`;
+  titleWrap.textContent = action.label;
 
   const pills = document.createElement("div");
   pills.className = "pills";
@@ -240,9 +307,7 @@ function renderChanges(card, result) {
     ul.className = "changes";
     for (const c of changes.slice(0, 12)) {
       const li = document.createElement("li");
-      li.innerHTML =
-        `<span class="target">${escapeHtml(c.target || "")}</span> ` +
-        `<span class="detail">${escapeHtml(c.detail || "")}</span>`;
+      li.innerHTML = `<span class="detail">${escapeHtml(c.detail || c.target || "")}</span>`;
       ul.appendChild(li);
     }
     if (changes.length > 12) {
@@ -279,11 +344,11 @@ async function run(id, card) {
     card.classList.toggle("applied", result.status === "applied");
     toast(
       result.status === "skipped"
-        ? `${id}: already in the desired state`
-        : `${id}: ${result.message || "applied"}`,
+        ? `${labelFor(id)}: already in the desired state`
+        : `${labelFor(id)}: ${result.message || "applied"}`,
       result.ok ? "ok" : "err"
     );
-    if (result.needs_reboot) toast(`${id} needs a reboot to take effect`, "warn", 6000);
+    if (result.needs_reboot) toast(`${labelFor(id)} needs a reboot to take effect`, "warn", 6000);
     await refreshUndo();
   } catch (e) {
     showFoot(card, String(e), "err-reason");
@@ -306,7 +371,7 @@ async function undo(id, card) {
     const result = await invoke("undo_action", { id });
     card.classList.remove("applied");
     showFoot(card, result.message || "reverted", "ok-reason");
-    toast(`${id}: reverted`, "ok");
+    toast(`${labelFor(id)}: reverted`, "ok");
     await refreshUndo();
     renderActions();
   } catch (e) {
@@ -368,7 +433,7 @@ function batchRows(result) {
   const rows = [];
   for (const r of result.results || []) {
     rows.push({
-      k: r.action_id,
+      k: labelFor(r.action_id),
       v: r.ok ? (r.status || "applied") : `failed: ${r.error || "?"}`,
       cls: r.ok ? "" : "err",
     });
@@ -409,9 +474,8 @@ function renderUndo() {
 
     const title = document.createElement("div");
     title.className = "card-title";
-    title.innerHTML =
-      `${escapeHtml(entry.label || entry.action_id)}` +
-      `<span class="card-id">${escapeHtml(entry.action_id)} · ${entry.entries} journaled value(s)</span>`;
+    title.textContent = labelFor(entry.action_id);
+    title.title = `${entry.entries} change(s) recorded`;
 
     const actions = document.createElement("div");
     actions.className = "card-actions";
@@ -419,7 +483,7 @@ function renderUndo() {
       button("Revert", "btn undo small", async () => {
         try {
           const r = await invoke("undo_action", { id: entry.action_id });
-          toast(`${entry.action_id}: reverted`, "ok");
+          toast(`${labelFor(entry.action_id)}: reverted`, "ok");
           await refreshUndo();
           renderActions();
         } catch (e) {
@@ -438,11 +502,10 @@ function renderUndo() {
 
 function showView(name) {
   state.view = name;
-  for (const v of ["actions", "undo", "about", "log", "contact"]) {
+  for (const v of ["actions", "undo", "log", "contact"]) {
     $("view-" + v).hidden = v !== name;
   }
   if (name === "undo") renderUndo();
-  if (name === "about") renderAbout();
   if (name === "log") renderLog();
 }
 
@@ -478,57 +541,6 @@ function openTelegram() {
     if (win) return;
   } catch {}
   toast("Couldn't open the browser — scan the QR or type t.me/Alpha0NemesiSS", "warn", 6000);
-}
-
-async function renderAbout() {
-  const host = $("about-body");
-  try {
-    const info = await invoke("system_info");
-    const about = await invoke("about");
-    const hw = (info && info.hardware) || {};
-
-    const rows = [
-      ["Application", `${about.name} v${about.version}`],
-      ["Developer", about.developer],
-      ["Protocol", `v${about.protocol}`],
-      ["Catalog schema", `v${about.catalog_schema}`],
-      ["Repository", about.repo],
-      ["Operating system", `${hw.os_name || "?"} ${hw.os_version || ""}`],
-      ["CPU", `${hw.cpu_name || "?"} (${hw.cpu_cores || "?"} cores / ${hw.cpu_threads || "?"} threads)`],
-      ["GPU", hw.discrete_gpu ? hw.discrete_gpu.name : "none detected"],
-      ["RAM", hw.ram_mb ? `${(hw.ram_mb / 1024).toFixed(1)} GB` : "?"],
-      ["Administrator", hw.is_elevated ? "yes" : "no — HKLM writes will fail"],
-      ["Hypervisor active", hw.hypervisor_present === null ? "unknown" : hw.hypervisor_present ? "yes" : "no"],
-    ];
-
-    host.innerHTML =
-      `<table><tbody>` +
-      rows
-        .map(
-          ([k, v]) =>
-            `<tr><th>${escapeHtml(k)}</th><td>${escapeHtml(String(v))}</td></tr>`
-        )
-        .join("") +
-      `</tbody></table>
-
-      <h3>How this works</h3>
-      <p>Every action is described in a catalog fetched from the project's GitHub repository.
-      The catalog is <b>data, not code</b>: it can only select and configure actions that are
-      already compiled into this build. A catalog from GitHub cannot make the app do anything
-      new, and it is rejected outright if it tries.</p>
-
-      <h3>Undo</h3>
-      <p>Before a value is changed, the previous value is recorded in a journal. Reverting an
-      action replays that journal, so applying an action twice and reverting once still returns
-      you to the original state.</p>
-
-      <h3>What this cannot fix</h3>
-      <p>An emulator adds ARM-to-x86 translation and a frame of queueing that no setting removes.
-      If your hardware is already the limit, these tweaks will not create headroom that is not
-      there. They remove overhead; they do not add performance.</p>`;
-  } catch (e) {
-    host.textContent = String(e);
-  }
 }
 
 async function renderLog() {
@@ -594,13 +606,35 @@ async function main() {
       toast(String(e), "err");
     }
   };
-  $("lnk-about").onclick = (e) => { e.preventDefault(); showView("about"); };
   $("lnk-log").onclick = (e) => { e.preventDefault(); showView("log"); };
   $("btn-contact").onclick = (e) => { e.preventDefault(); showView("contact"); };
   $("lnk-contact").onclick = (e) => { e.preventDefault(); showView("contact"); };
   $("btn-copy-telegram").onclick = () => copyTelegramLink($("btn-copy-telegram"));
   $("btn-open-telegram").onclick = openTelegram;
   $("dlg-close").onclick = () => $("result-dialog").close();
+
+  const search = $("action-search");
+  search.oninput = () => {
+    state.query = search.value;
+    renderActions();
+  };
+  search.onkeydown = (e) => {
+    if (e.key === "Escape") {
+      search.value = "";
+      state.query = "";
+      state.tag = null;
+      renderActions();
+      search.blur();
+    }
+  };
+  document.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      if (state.view !== "actions") showView("actions");
+      search.focus();
+      search.select();
+    }
+  });
 
   for (const btn of document.querySelectorAll(".risk-opt")) {
     btn.onclick = async () => {

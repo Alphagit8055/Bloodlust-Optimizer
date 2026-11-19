@@ -467,6 +467,86 @@ h1 {
 .batch-bar { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .batch-note { font-size: 11.5px; }
 
+/* ---- filter bar */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.searchbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 240px;
+  max-width: 380px;
+  height: 34px;
+  padding: 0 10px;
+  color: var(--faint);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease,
+    color 0.16s ease;
+}
+.searchbox:focus-within {
+  color: var(--orange-hi);
+  background: var(--glass-strong);
+  border-color: rgba(243, 115, 56, 0.55);
+  box-shadow: 0 0 0 3px var(--orange-soft);
+}
+.searchbox input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--paper);
+  user-select: text;
+}
+.searchbox input::placeholder { color: var(--faint); }
+.searchbox input::-webkit-search-cancel-button { display: none; }
+.kbd {
+  padding: 2px 5px;
+  font-family: "Cascadia Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 9.5px;
+  color: var(--faint);
+  border: 1px solid var(--stroke);
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.searchbox:focus-within .kbd { opacity: 0; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  padding: 5px 11px;
+  font: inherit;
+  font-size: 11px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: color 0.14s ease, background 0.14s ease, border-color 0.14s ease,
+    transform 0.14s var(--ease-spring);
+}
+.chip:hover {
+  color: var(--paper);
+  background: var(--glass-strong);
+  border-color: var(--stroke-strong);
+}
+.chip:active { transform: scale(0.96); }
+.chip.on {
+  font-weight: 600;
+  color: #201005;
+  background: var(--orange);
+  border-color: var(--orange);
+}
+.chip.on:hover { background: var(--orange-hi); border-color: var(--orange-hi); }
+
 /* ---- cards */
 .cards {
   display: grid;
@@ -502,12 +582,6 @@ h1 {
   flex-direction: column;
   gap: 2px;
 }
-.card-id {
-  font-family: "Cascadia Mono", Consolas, monospace;
-  font-size: 9.5px;
-  color: var(--faint);
-  font-weight: 400;
-}
 .card-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
 .pills { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -542,10 +616,9 @@ h1 {
 .card-foot.err-reason { color: var(--bad); }
 .card-foot.ok-reason { color: var(--ok); }
 .changes { list-style: none; margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
-.changes .target { font-family: "Cascadia Mono", Consolas, monospace; font-size: 10px; color: var(--orange-hi); }
 .changes .detail { color: var(--muted); font-size: 10.5px; }
 
-/* ============================================= logs / about / contact */
+/* ============================================= logs / contact */
 .logbox {
   background: var(--ink-850);
   border: 1px solid var(--stroke);
@@ -559,14 +632,6 @@ h1 {
   overflow: auto;
   white-space: pre-wrap;
 }
-
-.about { max-width: 760px; }
-.about table { width: 100%; border-collapse: collapse; }
-.about th, .about td { padding: 9px 12px; text-align: left; font-size: 12px; border-bottom: 1px solid var(--stroke); }
-.about th { color: var(--muted); width: 180px; font-weight: 600; }
-.about td { color: var(--paper); }
-.about h3 { font-size: 14px; margin: 18px 0 6px; color: var(--orange-hi); font-weight: 600; }
-.about p { font-size: 12.5px; color: var(--paper-dim); line-height: 1.65; }
 
 .contact-wrap {
   display: grid;

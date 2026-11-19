@@ -68,10 +68,6 @@
     </div>
 
     <div class="side-foot">
-      <button class="side-link" id="lnk-about">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="1.1" fill="currentColor"/></svg>
-        About
-      </button>
       <button class="side-link" id="lnk-log">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 7l5 5-5 5M11 17h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Engine log
@@ -121,6 +117,14 @@
             <span class="muted batch-note" id="batch-note"></span>
           </div>
         </div>
+        <div class="filter-bar">
+          <label class="searchbox" for="action-search">
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M16 16l4.6 4.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <input id="action-search" type="search" placeholder="Search tweaks…" autocomplete="off" spellcheck="false" aria-label="Search tweaks" />
+            <span class="kbd">Ctrl K</span>
+          </label>
+          <div class="chips" id="tag-chips"></div>
+        </div>
         <div id="action-list" class="cards"></div>
       </section>
 
@@ -139,16 +143,6 @@
           </div>
         </div>
         <div id="undo-list" class="cards"></div>
-      </section>
-
-      <section id="view-about" class="view" hidden>
-        <div class="view-head">
-          <div class="view-heading">
-            <span class="eyebrow"><span class="eyebrow-dot"></span>About</span>
-            <h1>Bloodlust Optimizer</h1>
-          </div>
-        </div>
-        <div class="about" id="about-body"></div>
       </section>
 
       <section id="view-log" class="view" hidden>
