@@ -64,9 +64,20 @@ jobs:
       - name: Install the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            src-tauri -> target
+            bridge -> target
+
       - name: cargo test (bridge)
         working-directory: bridge
         run: cargo test --locked || cargo test
+
+      # The Tauri shell's command layer only gets compiled at tag time otherwise.
+      - name: cargo check (Tauri shell)
+        working-directory: src-tauri
+        run: cargo check --locked
 
       # The Tauri shell enables the bridge's `http` feature, so plain
       # `cargo test` never compiles that path. Check it here so a

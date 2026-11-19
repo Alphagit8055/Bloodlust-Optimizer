@@ -51,7 +51,7 @@ pub enum AppError {
 // Tauri needs errors that serialize so the webview sees a useful message
 // rather than an opaque rejection.
 impl serde::Serialize for AppError {
-    fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+    fn serialize<S: serde::Serializer>(&self, s: S) -> std::result::Result<S::Ok, S::Error> {
         serde::Serialize::serialize(&self.to_string(), s)
     }
 }
@@ -127,9 +127,9 @@ fn resolve_sidecar(app: &AppHandle) -> std::result::Result<(PathBuf, Vec<String>
         ]
     };
 
-    for c in candidates {
+    for c in &candidates {
         if c.is_file() {
-            return Ok((c, Vec::new()));
+            return Ok((c.clone(), Vec::new()));
         }
     }
 
@@ -357,18 +357,22 @@ pub async fn about() -> Value {
 /// Report whether the engine is alive, so the UI can show a clear error instead
 /// of hanging on a dead pipe.
 #[tauri::command]
-pub async fn engine_status(state: State<'_, AppState>) -> Value {
+pub async fn engine_status(state: State<'_, AppState>) -> Result<Value> {
     let alive = state
         .sidecar
         .lock()
         .ok()
         .and_then(|g| g.as_ref().map(|s| s.is_alive()))
         .unwrap_or(false);
-    json!({"alive": alive})
+    Ok(json!({"alive": alive}))
 }
 
 /// Build the plugin and command list. Kept separate so `main.rs` stays trivial.
-pub fn register_handlers<R: tauri::Runtime>(builder: tauri::Builder<R>) -> tauri::Builder<R> {
+///
+/// Concrete `Wry` runtime throughout: `AppHandle` in the commands defaults to
+/// `Wry`, and a generic `R: Runtime` here would let the handler demand
+/// `CommandArg` for an arbitrary runtime, which the commands never satisfy.
+pub fn register_handlers(builder: tauri::Builder) -> tauri::Builder {
     builder
         .manage(AppState::new())
         .invoke_handler(tauri::generate_handler![
