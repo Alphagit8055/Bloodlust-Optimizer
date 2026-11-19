@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bloodlust Optimizer</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div id="boot" class="boot">
+  <div class="boot-mark">BLOODLUST</div>
+  <div class="boot-sub" id="boot-status">starting the tuning engine&hellip;</div>
+</div>
+
+<div id="app" class="app" hidden>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">BLOODLUST</span>
+      <span class="brand-sub">OPTIMIZER</span>
+    </div>
+
+    <div class="sysline" id="sysline">
+      <span class="dot" id="engine-dot"></span>
+      <span id="sys-text">connecting&hellip;</span>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="btn ghost" id="btn-refresh-catalog" title="Fetch the latest catalog from GitHub">Sync catalog</button>
+      <button class="btn ghost" id="btn-undo" title="Everything you can revert">Undo<span class="badge" id="undo-count" hidden>0</span></button>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <nav class="sidebar">
+      <div class="side-section" id="family-list"></div>
+
+      <div class="side-section">
+        <div class="side-title">Risk ceiling</div>
+        <div class="risk-picker" id="risk-picker">
+          <button data-ceiling="safe" class="risk-opt on">Safe</button>
+          <button data-ceiling="moderate" class="risk-opt">Moderate</button>
+          <button data-ceiling="aggressive" class="risk-opt">Aggressive</button>
+          <button data-ceiling="danger" class="risk-opt">Danger</button>
+        </div>
+        <p class="hint">
+          Anything above this level refuses to run, even from a batch. Undo always works.
+        </p>
+      </div>
+
+      <div class="side-section">
+        <div class="side-title">Catalog</div>
+        <div class="prov" id="provenance">not loaded</div>
+      </div>
+
+      <div class="side-foot">
+        <a href="#" id="lnk-about">About</a>
+        <a href="#" id="lnk-log">Engine log</a>
+      </div>
+    </nav>
+
+    <main class="main">
+
+      <section id="view-actions" class="view">
+        <div class="view-head">
+          <h1 id="family-title">System Report</h1>
+          <p id="family-desc" class="lede"></p>
+          <div class="batch-bar">
+            <button class="btn" id="btn-preview-all">Preview all safe</button>
+            <button class="btn danger-soft" id="btn-run-all">Run all safe</button>
+            <span class="muted" id="batch-note"></span>
+          </div>
+        </div>
+        <div id="action-list" class="cards"></div>
+      </section>
+
+      <section id="view-undo" class="view" hidden>
+        <div class="view-head">
+          <h1>Undo</h1>
+          <p class="lede">
+            Every change is journaled before it is written. Reverting an action restores the
+            exact values that were there before you first applied it &mdash; not the values from
+            the last time you ran it.
+          </p>
+          <div class="batch-bar">
+            <button class="btn" id="btn-undo-all">Revert everything</button>
+          </div>
+        </div>
+        <div id="undo-list" class="cards"></div>
+      </section>
+
+      <section id="view-about" class="view" hidden>
+        <div class="view-head"><h1>About</h1></div>
+        <div class="about" id="about-body"></div>
+      </section>
+
+      <section id="view-log" class="view" hidden>
+        <div class="view-head">
+          <h1>Engine log</h1>
+          <p class="lede">The last messages from the tuning engine. Useful when reporting a bug.</p>
+        </div>
+        <pre id="log-body" class="logbox"></pre>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="toast-host" class="toast-host"></div>
+
+  <dialog id="result-dialog" class="dialog">
+    <h2 id="dlg-title">Result</h2>
+    <div id="dlg-body"></div>
+    <div class="dlg-actions">
+      <button class="btn" id="dlg-close">Close</button>
+    </div>
+  </dialog>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

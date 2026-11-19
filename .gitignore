@@ -1,0 +1,41 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+venv/
+
+# PyInstaller output. Never committed: the bundle is built in CI and staged
+# into src-tauri/sidecar, which is also ignored.
+sidecar/build/
+sidecar/dist/
+src-tauri/sidecar/
+
+# --- Rust ---
+target/
+Cargo.lock
+!src-tauri/Cargo.lock
+
+# --- Tauri ---
+src-tauri/gen/
+src-tauri/WixTools/
+
+# --- Node (only used for the signer) ---
+node_modules/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Never commit these ---
+*.key
+*.pem
+.env
+.env.*

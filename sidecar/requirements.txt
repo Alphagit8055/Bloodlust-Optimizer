@@ -1,0 +1,10 @@
+# The engine deliberately has no runtime dependencies.
+#
+# Everything it needs — registry access, JSON, hashing, subprocess — is in the
+# Python standard library. That is not an accident: it keeps the PyInstaller
+# bundle small, removes a supply-chain surface from an elevated process, and
+# means there is no dependency to audit before shipping.
+#
+# These are development/test requirements only.
+pytest>=8.0
+pyinstaller>=6.0

@@ -1,0 +1,27 @@
+[package]
+name = "bloodlust-bridge"
+version = "0.1.0"
+edition = "2021"
+description = "Wire protocol and catalog verification for Bloodlust Optimizer"
+license = "MIT"
+
+# This crate deliberately has NO Tauri dependency. That keeps the JSON-RPC
+# client and the catalog verifier compilable and testable on any platform,
+# including CI on Linux, without needing webkit or a display server.
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "2"
+
+# Optional so `cargo test` works with zero network access. The Tauri shell
+# enables it; the test suite does not need it.
+ureq = { version = "2", features = ["tls"], optional = true }
+
+[features]
+default = []
+http = ["dep:ureq"]
+
+[dev-dependencies]
+serde_json = "1"

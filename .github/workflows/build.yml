@@ -1,0 +1,146 @@
+name: Build and Release
+
+# Push a tag like v0.1.0 to produce a public release.
+# Pushing to main only runs the checks and uploads nothing.
+
+on:
+  push:
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build (leave blank for a test build)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write   # needed to create the release
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ----------------------------------------------------------- fast feedback
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Run engine tests
+        working-directory: sidecar
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pytest tests -v
+
+      - name: Verify the catalog against the shipped allowlist
+        working-directory: sidecar
+        run: |
+          python - <<'PY'
+          import sys, pathlib
+          sys.path.insert(0, "src")
+          from bloodlust import actions
+          from bloodlust.core import catalog as cm
+          cat = cm.load_file("../catalog/catalog.json", actions.allowlist())
+          print(f"catalog OK: {len(cat.actions)} actions, {len(cat.families)} families")
+          print("risk spread:", cat.count_by_risk())
+          unused = sorted(set(actions.allowlist()) - {s.handler for s in cat.actions.values()})
+          if unused:
+              print("handlers shipped but unused by the catalog:", unused)
+          PY
+
+      - name: Test the bridge crate
+        uses: dtolnay/rust-toolchain@stable
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: cargo test (bridge)
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: bridge
+        run: cargo test --locked || cargo test
+
+  # ------------------------------------------------------------- the release
+  build:
+    name: Build Windows installer
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+
+      # The engine must exist before tauri build runs, because tauri.conf.json
+      # bundles src-tauri/sidecar/ as a resource.
+      - name: Build and self-test the engine
+        run: python scripts/build_sidecar.py
+
+      - name: Upload the engine bundle as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-bundle
+          path: src-tauri/sidecar
+          if-no-files-found: error
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "src-tauri -> target"
+
+      # The updater signs the installer. The private key lives in repo secrets,
+      # never in the repository; the public half is in tauri.conf.json.
+      - name: Verify the updater public key is configured
+        shell: pwsh
+        run: |
+          $cfg = Get-Content src-tauri/tauri.conf.json -Raw | ConvertFrom-Json
+          $key = $cfg.plugins.updater.pubkey
+          if (-not $key -or $key -like 'REPLACE_WITH*') {
+            Write-Host "::error::plugins.updater.pubkey is still the placeholder. Run 'npx tauri signer generate' and paste the public key into src-tauri/tauri.conf.json."
+            exit 1
+          }
+          Write-Host "updater public key is configured"
+
+      - name: Build and publish the release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.event.inputs.tag || github.ref_name }}
+          releaseName: "Bloodlust Optimizer __VERSION__"
+          releaseBody: |
+            ## Bloodlust Optimizer
+
+            Download the `Bloodlust-Optimizer_*_x64-setup.exe` asset below.
+
+            Every action this build applies can be reverted from the Undo tab.
+          releaseDraft: true
+          prerelease: false
+          args: --bundles nsis
+
+      - name: Summarise
+        shell: pwsh
+        run: |
+          Write-Host "Release assets are in the draft release for ${{ github.ref_name }}."
+          Write-Host "Review the draft, then publish it. Users get the update through the built-in updater."

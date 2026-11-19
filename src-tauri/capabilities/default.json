@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Bloodlust Optimizer main window. Deliberately minimal: the renderer talks only to our own commands, never to the filesystem or shell directly.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "updater:default",
+    "dialog:allow-message",
+    "dialog:allow-ask"
+  ]
+}

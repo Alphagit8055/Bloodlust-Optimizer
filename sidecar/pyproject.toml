@@ -1,0 +1,28 @@
+[project]
+name = "bloodlust-engine"
+version = "0.1.0"
+description = "Bloodlust Optimizer tuning engine (sidecar)"
+requires-python = ">=3.10"
+readme = "../README.md"
+license = { text = "MIT" }
+authors = [{ name = "Telegram: @Alpha0NemesiSS" }]
+
+# No runtime dependencies. See requirements.txt for why that is deliberate.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+build = ["pyinstaller>=6.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["error::DeprecationWarning:bloodlust.*"]
+
+[tool.ruff]
+line-length = 96
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501"]
