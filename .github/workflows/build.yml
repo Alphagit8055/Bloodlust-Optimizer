@@ -46,6 +46,7 @@ jobs:
 
       - name: Verify the catalog against the shipped allowlist
         working-directory: sidecar
+        shell: bash
         run: |
           python - <<'PY'
           import sys, pathlib
