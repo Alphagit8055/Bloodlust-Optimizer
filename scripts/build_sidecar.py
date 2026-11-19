@@ -65,13 +65,11 @@ def already_staged() -> bool:
     return staged.is_file()
 
 
-def build(force: bool = False) -> Path:
-    if not force and already_staged():
-        staged = ROOT / "src-tauri" / "sidecar" / BIN_NAME
-        print(f"engine already staged at {staged} — skipping the rebuild")
-        print("(pass --force to rebuild anyway)")
-        return staged
+def staged_path() -> Path:
+    return ROOT / "src-tauri" / "sidecar" / BIN_NAME
 
+
+def build() -> Path:
     if DIST.exists():
         shutil.rmtree(DIST)
     build_dir = SIDECAR / "build"
@@ -119,8 +117,11 @@ def selftest(binary: Path) -> None:
 
 def stage(binary: Path) -> Path:
     """Place the bundle where tauri.conf.json declares it."""
-    src_dir = binary.parent
+    src_dir = binary.parent.resolve()
     dest_dir = ROOT / "src-tauri" / "sidecar"
+    if src_dir == dest_dir.resolve():
+        # Never delete the thing we are about to copy from.
+        return binary
     if dest_dir.exists():
         shutil.rmtree(dest_dir)
     dest_dir.mkdir(parents=True)
@@ -150,11 +151,19 @@ def main() -> int:
     check_python()
     ensure_pyinstaller()
 
-    binary = build(force=args.force)
-    if not args.no_selftest:
-        selftest(binary)
-    if not args.no_stage:
-        binary = stage(binary)
+    if not args.force and not args.no_stage and already_staged():
+        binary = staged_path()
+        print(f"engine already staged at {binary} — skipping the rebuild")
+        print("(pass --force to rebuild anyway)")
+        if not args.no_selftest:
+            selftest(binary)
+    else:
+        binary = build()
+        if not args.no_selftest:
+            selftest(binary)
+        if not args.no_stage:
+            binary = stage(binary)
+
     report(binary)
     return 0
 

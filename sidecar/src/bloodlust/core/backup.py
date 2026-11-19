@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import base64
 import json
+import shutil
 import time
 from pathlib import Path
 from typing import Any, Optional
@@ -81,6 +82,10 @@ class UndoJournal:
 
     def record_key_created(self, hive: str, path: str) -> None:
         self.entries.append({"kind": "key", "hive": hive, "path": path})
+
+    def record_file(self, target: str, backup: str) -> None:
+        """Record a file whose prior contents were copied to ``backup``."""
+        self.entries.append({"kind": "file", "target": target, "backup": backup})
 
     @property
     def empty(self) -> bool:
@@ -251,6 +256,28 @@ class UndoJournal:
                         "target": " ".join(entry["restore_argv"][:2]),
                         "detail": f"restored: {entry.get('describe') or ''} "
                         f"(rc={out.returncode})",
+                        "reversible": False,
+                    }
+                )
+                continue
+
+            if entry["kind"] == "file":
+                backup = Path(entry["backup"])
+                target = Path(entry["target"])
+                if backup.exists():
+                    try:
+                        target.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(backup, target)
+                        detail = "restored original file"
+                    except OSError as exc:
+                        detail = f"could not restore file: {exc}"
+                else:
+                    detail = "backup file is missing"
+                changes.append(
+                    {
+                        "kind": "file",
+                        "target": str(target),
+                        "detail": detail,
                         "reversible": False,
                     }
                 )

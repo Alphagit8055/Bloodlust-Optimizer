@@ -13,9 +13,9 @@ from __future__ import annotations
 
 from typing import Callable
 
-from . import adb, audit, cleanup, gameloop, network, nvidia, power, windows
+from . import adb, audit, cleanup, gameloop, legacy, network, nvidia, power, windows
 
-_MODULES = (power, network, nvidia, windows, gameloop, adb, audit, cleanup)
+_MODULES = (power, network, nvidia, windows, gameloop, adb, legacy, audit, cleanup)
 
 
 def all_handlers() -> dict[str, Callable]:

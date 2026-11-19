@@ -296,7 +296,14 @@ def test_explain_blocks_reports_which_requirement_failed(executor, fake_windows_
     assert any("administrator" in d for d in details)
 
 
-def test_explain_blocks_is_empty_when_everything_is_available(executor):
+def test_explain_blocks_only_reports_real_mismatches(executor):
+    """The fake machine is Intel + NVIDIA, so AMD-only rows are legitimately locked.
+
+    What must not happen is a block with no concrete reason, or a block on an
+    action whose requirements this hardware actually satisfies.
+    """
     result = executor.run("audit_explain_blocks")
-    assert result["changes"] == []
-    assert "every loaded action is available" in result["message"]
+    details = [c["detail"] for c in result["changes"]]
+    assert details, "expected the AMD-only rows to be reported as blocked"
+    assert any("requires an amd GPU" in d for d in details)
+    assert not any("Could not verify" in d for d in details)

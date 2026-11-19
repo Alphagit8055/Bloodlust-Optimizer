@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "catalog_version": "2026.11.19-1",
+  "catalog_version": "2026.11.20-1",
   "min_app_version": "0.1.0",
   "notice": "Every action here maps to a handler compiled into the app. Editing this file can retune existing actions; it cannot add new ones.",
   "families": [
@@ -30,28 +30,28 @@
       "label": "GPU & Scheduling",
       "icon": "cpu",
       "order": 40,
-      "description": "Which GPU renders, and how the scheduler treats its threads."
+      "description": "Which GPU renders, how its driver behaves, and how the scheduler treats its threads."
     },
     {
       "id": "windows",
       "label": "Windows Shell",
       "icon": "window",
       "order": 50,
-      "description": "Overlays, animations and input."
+      "description": "Scheduler, kernel, services and shell. System-wide; nothing here is GameLoop-specific."
     },
     {
       "id": "gameloop",
       "label": "GameLoop",
       "icon": "gamepad",
       "order": 60,
-      "description": "Install-level maintenance. Engine settings stay in GameLoop's own UI."
+      "description": "Engine registry keys, launcher behaviour and GameLoop's own Config.ini."
     },
     {
       "id": "adb",
       "label": "Emulator Guest (ADB)",
       "icon": "android",
       "order": 70,
-      "description": "Settings inside the Android guest. A factory reset of the emulator reverts them all."
+      "description": "Settings inside the running Android guest. Most revert on restart or a factory reset."
     },
     {
       "id": "cleanup",
@@ -949,6 +949,3055 @@
         "gpu"
       ],
       "description": "Deletes NVIDIA and AMD shader caches. They rebuild on first use; expect a brief stutter until they do."
+    },
+    {
+      "id": "gl_vm_ram_8gb",
+      "label": "VM RAM: 8 GB",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set the Tencent engine's fixed VM memory to 8192 MB. Only useful when GameLoop's Auto value launches too low; restart GameLoop to apply.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_vm_ram_8gb"
+      },
+      "tags": [
+        "gameloop",
+        "memory"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_vm_cpu_host",
+      "label": "VM CPU: match host cores",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set VMCpuCount to the number of physical cores this machine reports. More vCPUs is not automatically faster; benchmark it.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_vm_cpu_host"
+      },
+      "tags": [
+        "gameloop",
+        "cpu"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_vm_cpu_6",
+      "label": "VM CPU: 6 cores",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set VMCpuCount to 6. A safe fixed preset for 6-core desktops; restart GameLoop to apply.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_vm_cpu_6"
+      },
+      "tags": [
+        "gameloop",
+        "cpu"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_fxaa_off",
+      "label": "FXAA: off",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set the Tencent engine's FXAA quality. Anti-aliasing is not exposed in GameLoop's normal panel; lower settings reduce GPU cost.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_fxaa_off"
+      },
+      "tags": [
+        "gameloop",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_fxaa_balanced",
+      "label": "FXAA: balanced",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set the Tencent engine's FXAA quality. Anti-aliasing is not exposed in GameLoop's normal panel; lower settings reduce GPU cost.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_fxaa_balanced"
+      },
+      "tags": [
+        "gameloop",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_fxaa_high",
+      "label": "FXAA: high",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set the Tencent engine's FXAA quality. Anti-aliasing is not exposed in GameLoop's normal panel; lower settings reduce GPU cost.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_fxaa_high"
+      },
+      "tags": [
+        "gameloop",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_vulkan_on",
+      "label": "Renderer: enable Vulkan",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set EnableVulkan=1 in the Tencent engine key. Some GPUs render faster; others regress. Benchmark before keeping it.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_vulkan_on"
+      },
+      "tags": [
+        "gameloop",
+        "renderer"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_vulkan_off",
+      "label": "Renderer: disable Vulkan",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set EnableVulkan=0 so GameLoop stays on its OpenGL/DirectX path.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_vulkan_off"
+      },
+      "tags": [
+        "gameloop",
+        "renderer"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_opengl_version_3",
+      "label": "OpenGL version: 3.x",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set OpenGLVersion=3 in the Tencent engine key. Restart GameLoop to apply.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_opengl_version_3"
+      },
+      "tags": [
+        "gameloop",
+        "renderer"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_renderer_gles",
+      "label": "Renderer engine: GLES",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set RendererEngine=GLES in the Tencent engine key for the OpenGL path.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_renderer_gles"
+      },
+      "tags": [
+        "gameloop",
+        "renderer"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_vsync_off",
+      "label": "VSync: off",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Disable the emulator's V-Sync. Lower input latency; enable it again only if tearing is the real problem.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_vsync_off"
+      },
+      "tags": [
+        "gameloop",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_vsync_on",
+      "label": "VSync: on",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Enable the emulator's V-Sync to stop tearing.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_vsync_on"
+      },
+      "tags": [
+        "gameloop",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_shader_cache_on",
+      "label": "Shader cache: on",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set ShaderCacheEnabled=1 in the Tencent engine key.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_shader_cache_on"
+      },
+      "tags": [
+        "gameloop",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_shader_cache_off",
+      "label": "Shader cache: off",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set ShaderCacheEnabled=0 in the Tencent engine key.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_shader_cache_off"
+      },
+      "tags": [
+        "gameloop",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_local_shader_cache_on",
+      "label": "Local shader cache: on",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set LocalShaderCacheEnabled=1 in the Tencent engine key.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_local_shader_cache_on"
+      },
+      "tags": [
+        "gameloop",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_local_shader_cache_off",
+      "label": "Local shader cache: off",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set LocalShaderCacheEnabled=0 in the Tencent engine key.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_local_shader_cache_off"
+      },
+      "tags": [
+        "gameloop",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_render_optimize_on",
+      "label": "Rendering optimization: on",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set RenderOptimizeEnabled=1 in the Tencent engine key.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_render_optimize_on"
+      },
+      "tags": [
+        "gameloop",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_render_optimize_off",
+      "label": "Rendering optimization: off",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set RenderOptimizeEnabled=0 in the Tencent engine key.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_render_optimize_off"
+      },
+      "tags": [
+        "gameloop",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_dedicated_gpu_on",
+      "label": "Prioritize dedicated GPU",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set GraphicsCardEnabled=1 and SetGraphicsCard=1 so GameLoop binds to the discrete GPU on dual-GPU laptops.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_dedicated_gpu_on"
+      },
+      "tags": [
+        "gameloop",
+        "gpu"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_dedicated_gpu_off",
+      "label": "Let GameLoop choose the GPU",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set GraphicsCardEnabled=0 so GameLoop follows Windows' GPU preference.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_dedicated_gpu_off"
+      },
+      "tags": [
+        "gameloop",
+        "gpu"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_internal_messaging_off",
+      "label": "Disable GameLoop internal messaging",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set InterMessageLocalSwitch=0 in the Tencent engine key to stop the launcher's internal message channel.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_internal_messaging_off"
+      },
+      "tags": [
+        "gameloop",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_predownload_off",
+      "label": "Disable game pre-download",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set PreDownloadCloudSwitch=0 so GameLoop does not pre-download updates in the background.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_predownload_off"
+      },
+      "tags": [
+        "gameloop",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_autostart_off",
+      "label": "Disable GameLoop autostart",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set AutoStart=0 in the Tencent engine key so the launcher stops starting with Windows.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_autostart_off"
+      },
+      "tags": [
+        "gameloop",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_appmarket_autostart_off",
+      "label": "Disable AppMarket autostart",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set AutoStart=0 in the AppMarket key so the store front stops launching in the background.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_appmarket_autostart_off"
+      },
+      "tags": [
+        "gameloop",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_background_activity_off",
+      "label": "Disable all GameLoop background activity",
+      "family": "gameloop",
+      "risk": "aggressive",
+      "description": "Bundle: stop autostart, pre-download, internal messaging and AppMarket autostart in one pass.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_background_activity_off"
+      },
+      "tags": [
+        "gameloop",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_hw_decoding_on",
+      "label": "Hardware video decoding: on",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set EnableHardwareDecoding=1 in Config.ini under [engine]. The file is backed up before editing and only this line is restored on undo.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_hw_decoding_on"
+      },
+      "tags": [
+        "gameloop",
+        "video"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_hw_decoding_off",
+      "label": "Hardware video decoding: off",
+      "family": "gameloop",
+      "risk": "safe",
+      "description": "Set EnableHardwareDecoding=0 in Config.ini under [engine].",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_hw_decoding_off"
+      },
+      "tags": [
+        "gameloop",
+        "video"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_renderer_directx_ini",
+      "label": "Config.ini renderer: DirectX",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set Engine_100038.Renderer=0 (DirectX/Smart) in Config.ini. Registry stays the runtime source; the INI keeps it sticky.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_renderer_directx_ini"
+      },
+      "tags": [
+        "gameloop",
+        "renderer"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_renderer_opengl_ini",
+      "label": "Config.ini renderer: OpenGL+",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set Engine_100038.Renderer=1 (OpenGL+) in Config.ini.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_renderer_opengl_ini"
+      },
+      "tags": [
+        "gameloop",
+        "renderer"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_renderer_vulkan_ini",
+      "label": "Config.ini renderer: Vulkan",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set Engine_100038.Renderer=2 (Vulkan) in Config.ini.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_renderer_vulkan_ini"
+      },
+      "tags": [
+        "gameloop",
+        "renderer"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_vm_dpi_320",
+      "label": "VM DPI: 320",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set VMDPI=320, the legacy control profile for a 1440x1080 guest. Restart the emulator to apply.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_vm_dpi_320"
+      },
+      "tags": [
+        "gameloop",
+        "display"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_vm_resolution_1440x1080",
+      "label": "VM resolution: 1440x1080",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set VMResWidth=1440 and VMResHeight=1080 in the Tencent engine key.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_vm_resolution_1440x1080"
+      },
+      "tags": [
+        "gameloop",
+        "display"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_force_directx",
+      "label": "Force DirectX rendering",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set ForceDirectX=1 in the Tencent engine key. Use only when the OpenGL path is broken on this driver.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_force_directx"
+      },
+      "tags": [
+        "gameloop",
+        "renderer"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_engine_cpu_high",
+      "label": "Give the engine high CPU priority",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set CpuPriorityClass=3 (High) for aow_exe.exe through IFEO. Applied at every process start.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_engine_cpu_high"
+      },
+      "tags": [
+        "gameloop",
+        "priority",
+        "ifeo"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "gl_engine_io_critical",
+      "label": "Give the engine top disk priority",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set IoPriority=3 (Critical) for aow_exe.exe through IFEO so guest disk I/O is not queued behind background work.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_engine_io_critical"
+      },
+      "tags": [
+        "gameloop",
+        "priority",
+        "ifeo"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "gl_launcher_above_normal",
+      "label": "Launcher: above-normal CPU",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set CpuPriorityClass=6 (Above Normal) for AppMarket.exe.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_launcher_above_normal"
+      },
+      "tags": [
+        "gameloop",
+        "priority",
+        "ifeo"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "gl_launcher_high",
+      "label": "Launcher: high CPU",
+      "family": "gameloop",
+      "risk": "aggressive",
+      "description": "Set CpuPriorityClass=3 (High) for AppMarket.exe. Benchmark it; a busy store UI can steal time from the game.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_launcher_high"
+      },
+      "tags": [
+        "gameloop",
+        "priority",
+        "ifeo"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false
+    },
+    {
+      "id": "gl_cef_low_priority",
+      "label": "Lower the store/ads UI priority",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set cef_frame_render.exe to Below Normal CPU and Low I/O priority so the launcher's web UI yields to the engine.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_cef_low_priority"
+      },
+      "tags": [
+        "gameloop",
+        "priority",
+        "ifeo"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "gl_high_dpi_aware",
+      "label": "Stop Windows scaling GameLoop",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Add HIGHDPIAWARE to GameLoop's emulator executables in AppCompatFlags. Stops DPI virtualization blur and scaling cost.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_high_dpi_aware"
+      },
+      "tags": [
+        "gameloop",
+        "compat"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_dscp_ef",
+      "label": "DSCP EF marking for GameLoop",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Tag GameLoop traffic with DSCP 46 (Expedited Forwarding) so routers with QoS treat it as latency-sensitive.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_dscp_ef"
+      },
+      "tags": [
+        "gameloop",
+        "network"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_qos_bandwidth",
+      "label": "Remove QoS bandwidth reservation",
+      "family": "gameloop",
+      "risk": "moderate",
+      "description": "Set NonBestEffortLimit=0 so Windows stops reserving 20% of the link for QoS-aware apps. Reboot to apply.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_qos_bandwidth"
+      },
+      "tags": [
+        "gameloop",
+        "network"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true
+    },
+    {
+      "id": "gl_gpo_qos",
+      "label": "Persistent DSCP policy for GameLoop",
+      "family": "gameloop",
+      "risk": "aggressive",
+      "description": "Create per-app GPO QoS policies with DSCP 46 and unlimited throttle for GameLoop executables.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_gpo_qos"
+      },
+      "tags": [
+        "gameloop",
+        "network"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "gl_defender_exclusions",
+      "label": "Exclude GameLoop from Defender scans",
+      "family": "gameloop",
+      "risk": "aggressive",
+      "description": "Add the GameLoop install folder to Defender path exclusions. Emulator disk I/O is heavy; the trade-off is that this folder is no longer scanned in real time.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gl_defender_exclusions"
+      },
+      "tags": [
+        "gameloop",
+        "defender"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_animations_off",
+      "label": "Guest: disable animations",
+      "family": "adb",
+      "risk": "safe",
+      "description": "Set window, transition and animator scales to 0 inside the emulator. Makes the UI feel faster; a factory reset reverts it.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_animations_off"
+      },
+      "tags": [
+        "adb",
+        "ui"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_hw_overlays_off",
+      "label": "Guest: force GPU composition",
+      "family": "adb",
+      "risk": "aggressive",
+      "description": "Tell SurfaceFlinger to GPU-composite every layer (service call SurfaceFlinger 1008 i32 0). Some scenes lose FPS; opt in only if it helps.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_hw_overlays_off"
+      },
+      "tags": [
+        "adb",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_bg_process_limit_zero",
+      "label": "Guest: background process limit 0",
+      "family": "adb",
+      "risk": "aggressive",
+      "description": "Set background_process_limit=0 so Android keeps no cached background processes. The foreground game is untouched.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_bg_process_limit_zero"
+      },
+      "tags": [
+        "adb",
+        "memory"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_lmk_aggressive",
+      "label": "Guest: reap cached helpers sooner",
+      "family": "adb",
+      "risk": "aggressive",
+      "description": "Raise only the low-memory-killer tail bands so cached helpers (gameloopplus, AppMarket, qqdownloader) are reaped earlier. Foreground and visible bands stay stock. Session-only.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_lmk_aggressive"
+      },
+      "tags": [
+        "adb",
+        "memory"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_camera_off",
+      "label": "Guest: stop camera service",
+      "family": "adb",
+      "risk": "moderate",
+      "description": "Ask the guest to stop its camera service. A VM has no camera; some GameLoop images restart it immediately and the result says so.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_camera_off"
+      },
+      "tags": [
+        "adb",
+        "services"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_prelaunch_cleanup",
+      "label": "Guest: pre-launch cleanup",
+      "family": "adb",
+      "risk": "safe",
+      "description": "One-shot: kill cached background processes and trim caches before launching the game. Does not touch foreground or persistent apps.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_prelaunch_cleanup"
+      },
+      "tags": [
+        "adb",
+        "cleanup"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_play_services_off",
+      "label": "Guest: stop Google Play services",
+      "family": "adb",
+      "risk": "danger",
+      "description": "Disable com.google.android.gms for the session. Frees RAM but breaks anything that depends on Play services; a factory reset or re-enable restores it.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_play_services_off"
+      },
+      "tags": [
+        "adb",
+        "services"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_aot_compile",
+      "label": "Guest: AOT-compile all packages",
+      "family": "adb",
+      "risk": "moderate",
+      "description": "Run cmd package compile -m speed -f --full -a to precompile packages and reduce JIT stutter. Takes a few minutes.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_aot_compile"
+      },
+      "tags": [
+        "adb",
+        "performance"
+      ],
+      "reversible": false,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_hwui_opengl",
+      "label": "Guest: HWUI renderer OpenGL",
+      "family": "adb",
+      "risk": "aggressive",
+      "description": "Set debug.hwui.renderer=opengl and restart the Android runtime. Some GameLoop images ignore it; reboot to revert.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_hwui_opengl"
+      },
+      "tags": [
+        "adb",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_kernel_tuning",
+      "label": "Guest: kernel tuning bundle",
+      "family": "adb",
+      "risk": "aggressive",
+      "description": "Bundle vm.swappiness=10 with the noop I/O scheduler on every block device. Requires root; reports honestly when the guest refuses. The scheduler change lasts until the guest reboots and is not journaled.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_kernel_tuning"
+      },
+      "tags": [
+        "adb",
+        "kernel"
+      ],
+      "reversible": false,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_build_prop_perf",
+      "label": "Guest: add performance props",
+      "family": "adb",
+      "risk": "danger",
+      "description": "Append a documented performance block to /system/build.prop. Requires root and a writable system partition; the original file is copied to /sdcard/build.prop.backup first. Undo is manual: restore that backup.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_build_prop_perf"
+      },
+      "tags": [
+        "adb",
+        "kernel"
+      ],
+      "reversible": false,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_swappiness",
+      "label": "Guest: lower swappiness",
+      "family": "adb",
+      "risk": "moderate",
+      "description": "Set vm.swappiness=10 so the guest prefers reclaiming cache over swapping game pages. Requires root.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_swappiness"
+      },
+      "tags": [
+        "adb",
+        "kernel"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_io_scheduler",
+      "label": "Guest: noop I/O scheduler",
+      "family": "adb",
+      "risk": "aggressive",
+      "description": "Set the noop/none scheduler on every block device. Best on SSDs; do not use on spinning media. Lasts until the guest reboots.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_io_scheduler"
+      },
+      "tags": [
+        "adb",
+        "kernel"
+      ],
+      "reversible": false,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_trim_caches",
+      "label": "Guest: trim caches",
+      "family": "adb",
+      "risk": "safe",
+      "description": "Ask Android to trim cached files. One-shot and harmless.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_trim_caches"
+      },
+      "tags": [
+        "adb",
+        "cleanup"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_force_stop_store",
+      "label": "Guest: stop Play Store",
+      "family": "adb",
+      "risk": "moderate",
+      "description": "Force-stop com.android.vending for this session. It restarts on demand.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_force_stop_store"
+      },
+      "tags": [
+        "adb",
+        "background"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "adb_guest_disable_facebook",
+      "label": "Guest: disable Facebook app",
+      "family": "adb",
+      "risk": "moderate",
+      "description": "Disable com.facebook.katana and com.facebook.orca inside the emulator. Facebook's background services are a well-known RAM/CPU drain in GameLoop.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "adb_guest_disable_facebook"
+      },
+      "tags": [
+        "adb",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "win_win32_priority_separation",
+      "label": "Short quanta + high foreground boost",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set Win32PrioritySeparation=0x26. Short variable quanta with a strong foreground boost gives the game more CPU time and lowers input latency.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_win32_priority_separation"
+      },
+      "tags": [
+        "scheduler",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_global_timer_resolution",
+      "label": "System-wide 0.5 ms timer",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set GlobalTimerResolutionRequests=1 so any process requesting a 0.5 ms timer applies it system-wide. Reboot to apply.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_global_timer_resolution"
+      },
+      "tags": [
+        "scheduler",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_keep_kernel_in_ram",
+      "label": "Keep the kernel in RAM",
+      "family": "windows",
+      "risk": "aggressive",
+      "description": "Set DisablePagingExecutive=1. Keeps the kernel and drivers in physical memory and removes kernel page-fault stalls. Costs roughly 200-400 MB of RAM.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_keep_kernel_in_ram"
+      },
+      "tags": [
+        "kernel",
+        "memory"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_network_throttling_off",
+      "label": "Remove the network throttling cap",
+      "family": "windows",
+      "risk": "aggressive",
+      "description": "Set NetworkThrottlingIndex=0xFFFFFFFF. Removes the default 10-packets/ms cap. On some systems this raises NDIS DPC latency instead; benchmark it.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_network_throttling_off"
+      },
+      "tags": [
+        "network",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_system_responsiveness",
+      "label": "Reserve less CPU for background apps",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set MMCSS SystemResponsiveness=10, the lowest value the kernel honours. The game gets the other 90%.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_system_responsiveness"
+      },
+      "tags": [
+        "scheduler",
+        "mmcss"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_nagle_off",
+      "label": "Disable Nagle's algorithm",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set TcpAckFrequency=1, TcpNoDelay=1 and TcpDelAckTicks=0 on every TCP/IP interface. Small packets are sent immediately.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_nagle_off"
+      },
+      "tags": [
+        "network",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_presence_qos_off",
+      "label": "Stop idle-mouse throttling",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set DisableUserPresenceQos=1 so Windows does not treat an idle mouse as 'away' and quietly throttle the game.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_presence_qos_off"
+      },
+      "tags": [
+        "scheduler",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_driver_search_off",
+      "label": "Stop Windows replacing the GPU driver",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set SearchOrderConfig=0 so Windows Update does not silently replace a working GPU driver mid-session.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_driver_search_off"
+      },
+      "tags": [
+        "gpu",
+        "stability"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_mpo_off",
+      "label": "Disable MPO (stutter fix)",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set DWM OverlayTestMode=5 to disable Multi-Plane Overlay. Fixes some flicker and stutter on NVIDIA and AMD; reboot to apply.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_mpo_off"
+      },
+      "tags": [
+        "graphics",
+        "stutter"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true
+    },
+    {
+      "id": "win_pool_usage_max",
+      "label": "Cap paged-pool growth",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set PoolUsageMaximum=60 to avoid the slow-after-hours paged-pool growth pattern. Reboot to apply.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_pool_usage_max"
+      },
+      "tags": [
+        "memory",
+        "kernel"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_clear_pagefile_off",
+      "label": "Faster shutdown: don't clear pagefile",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set ClearPageFileAtShutdown=0. Windows stops wiping the pagefile on every shutdown, which shortens shutdown and avoids needless disk writes.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_clear_pagefile_off"
+      },
+      "tags": [
+        "shutdown",
+        "storage"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_page_combining_off",
+      "label": "Disable page combining",
+      "family": "windows",
+      "risk": "danger",
+      "description": "Set DisablePageCombining=1. Can free memory-management overhead on some builds, but it removes a memory-saving feature. Reboot to apply.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_page_combining_off"
+      },
+      "tags": [
+        "memory",
+        "danger"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_svchost_20gb",
+      "label": "Group services into fewer processes",
+      "family": "windows",
+      "risk": "danger",
+      "description": "Set SvcHostSplitThresholdInKB to 20 GB so Windows groups service hosts into fewer processes. Trims per-process overhead but reduces service isolation. Reboot.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_svchost_20gb"
+      },
+      "tags": [
+        "services",
+        "danger"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_port_thread_priority",
+      "label": "Printer stack: high port thread",
+      "family": "windows",
+      "risk": "danger",
+      "description": "Set PortThreadPriority=1 under LanmanServer. A legacy print-spooler tweak; keep it only if you understand the trade-off.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_port_thread_priority"
+      },
+      "tags": [
+        "danger"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_vbs_off",
+      "label": "Disable VBS / HVCI",
+      "family": "windows",
+      "risk": "danger",
+      "description": "Turn off Virtualization-Based Security and Hypervisor-Enforced Code Integrity. This can recover 5-10% FPS in the emulator but lowers malware resistance. Reboot.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_vbs_off"
+      },
+      "tags": [
+        "danger",
+        "security",
+        "fps"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_mitigations_off",
+      "label": "Disable CPU mitigations",
+      "family": "windows",
+      "risk": "danger",
+      "description": "Set FeatureSettingsOverride and FeatureSettingsOverrideMask to 3. Removes Spectre/Meltdown mitigations for speed at a real security cost. Reboot.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_mitigations_off"
+      },
+      "tags": [
+        "danger",
+        "security"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_bcdedit_timers",
+      "label": "BCEdit timer tweaks",
+      "family": "windows",
+      "risk": "danger",
+      "description": "Disable dynamic ticks, force the platform tick and request the enhanced TSC sync policy. Can help or hurt depending on firmware. Reboot.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_bcdedit_timers"
+      },
+      "tags": [
+        "danger",
+        "timers"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_hpet_off",
+      "label": "Remove the HPET override",
+      "family": "windows",
+      "risk": "danger",
+      "description": "Delete the useplatformclock BCD value so Windows uses the invariant TSC instead of forcing HPET. Reboot.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_hpet_off"
+      },
+      "tags": [
+        "danger",
+        "timers"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_ntfs_8dot3_off",
+      "label": "Disable NTFS 8.3 names",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Disable short-filename creation on NTFS. Speeds up directory churn in emulator disk images.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_ntfs_8dot3_off"
+      },
+      "tags": [
+        "storage"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_trim_enable",
+      "label": "Verify and enable TRIM",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set DisableDeleteNotify=0 so SSDs receive TRIM. One-shot; the previous state is not known, so there is nothing to revert.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_trim_enable"
+      },
+      "tags": [
+        "storage"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_modern_standby_off",
+      "label": "Disable Modern Standby",
+      "family": "windows",
+      "risk": "danger",
+      "description": "Set PlatformAoAcOverride=0 to force classic S3 sleep on laptops that expose it. Reboot; some machines do not support S3 at all.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_modern_standby_off"
+      },
+      "tags": [
+        "power",
+        "danger"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_audio_latency",
+      "label": "Lower audio latency",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Raise the Audio MMCSS task to GPU Priority 8, Priority 6, Scheduling Category High and SFIO Priority High.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_audio_latency"
+      },
+      "tags": [
+        "audio",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_sticky_keys_off",
+      "label": "Disable Sticky Keys popup",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set StickyKeys Flags=506 so five taps of Shift no longer opens the accessibility prompt mid-game.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_sticky_keys_off"
+      },
+      "tags": [
+        "input"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_filter_keys_off",
+      "label": "Disable Filter Keys popup",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set Keyboard Response Flags=122 so a held key no longer opens Filter Keys mid-game.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_filter_keys_off"
+      },
+      "tags": [
+        "input"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_widgets_off",
+      "label": "Disable Windows 11 Widgets",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Hide the Widgets button and disable the news/interests feed.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_widgets_off"
+      },
+      "tags": [
+        "shell",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_push_notifications_off",
+      "label": "Disable push notifications",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set ToastEnabled=0 so notifications stop interrupting fullscreen play.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_push_notifications_off"
+      },
+      "tags": [
+        "shell",
+        "focus"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_update_no_restart",
+      "label": "No automatic update restart",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set NoAutoRebootWithLoggedOnUsers=1 so Windows Update cannot reboot the machine while you are playing.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_update_no_restart"
+      },
+      "tags": [
+        "stability"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_mouse_buffer",
+      "label": "Reduce mouse input buffer",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set MouseDataQueueSize=20 under mouclass. A shallower queue lowers mouse latency on some controllers.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_mouse_buffer"
+      },
+      "tags": [
+        "input",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_keyboard_buffer",
+      "label": "Reduce keyboard input buffer",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set KeyboardDataQueueSize=20 under kbdclass.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_keyboard_buffer"
+      },
+      "tags": [
+        "input",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_ntfs_last_access_off",
+      "label": "Disable NTFS last-access writes",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set NtfsDisableLastAccessUpdate=1. Stops a metadata write on every file read, which matters for emulator disk images.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_ntfs_last_access_off"
+      },
+      "tags": [
+        "storage"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_prefetch_off",
+      "label": "Disable Prefetch",
+      "family": "windows",
+      "risk": "aggressive",
+      "description": "Set EnablePrefetcher=0. Reduces background disk work on fast SSDs, but slows cold application launches.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_prefetch_off"
+      },
+      "tags": [
+        "storage",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_memory_compression_off",
+      "label": "Disable memory compression",
+      "family": "windows",
+      "risk": "aggressive",
+      "description": "Disable the Memory Compression store. Frees the compression worker's CPU at the cost of more pagefile use.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_memory_compression_off"
+      },
+      "tags": [
+        "memory",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_search_off",
+      "label": "Disable Windows Search indexer",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Stop and disable the WSearch service. Removes constant background disk and CPU work.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_search_off"
+      },
+      "tags": [
+        "services",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_sysmain_off",
+      "label": "Disable SysMain (Superfetch)",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Stop and disable SysMain. On an SSD its prefetching is mostly unnecessary background I/O.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_sysmain_off"
+      },
+      "tags": [
+        "services",
+        "storage"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_telemetry_off",
+      "label": "Disable telemetry services",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Disable DiagTrack and dmwappushservice and set AllowTelemetry=0.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_telemetry_off"
+      },
+      "tags": [
+        "services",
+        "privacy"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_error_reporting_off",
+      "label": "Disable Windows Error Reporting",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Stop and disable WerSvc and suppress the crash UI. Cuts background crash uploads.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_error_reporting_off"
+      },
+      "tags": [
+        "services",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_delivery_optimization_off",
+      "label": "Disable Delivery Optimization",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Disable the DoSvc peer-to-peer update cache and set DODownloadMode=0.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_delivery_optimization_off"
+      },
+      "tags": [
+        "services",
+        "network"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_office_telemetry_off",
+      "label": "Disable Office telemetry",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set the Office 16.0 client telemetry policy to disabled. Office keeps working; it stops phoning home.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_office_telemetry_off"
+      },
+      "tags": [
+        "privacy",
+        "office"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_cortana_off",
+      "label": "Disable Cortana / Bing search",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set BingSearchEnabled=0, CortanaConsent=0 and AllowCortana=0. Stops web-backed search and its background work.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_cortana_off"
+      },
+      "tags": [
+        "privacy",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_background_uwp_off",
+      "label": "Disable background UWP apps",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set GlobalUserDisabled=1 so Store apps stop running in the background.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_background_uwp_off"
+      },
+      "tags": [
+        "background",
+        "uwp"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_etw_autologgers_off",
+      "label": "Disable ETW autologgers",
+      "family": "windows",
+      "risk": "aggressive",
+      "description": "Set Start=0 for the DiagLog and SQM autologgers. Reduces tracing overhead; diagnostics tools lose data.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_etw_autologgers_off"
+      },
+      "tags": [
+        "tracing",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_shutdown_tweaks",
+      "label": "Faster shutdown and responsiveness",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set WaitToKillServiceTimeout=2000 and ClearPageFileAtShutdown=0.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_shutdown_tweaks"
+      },
+      "tags": [
+        "shutdown"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_storage_sense_off",
+      "label": "Disable Storage Sense",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Turn off Storage Sense's automatic cleanup schedule.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_storage_sense_off"
+      },
+      "tags": [
+        "storage",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_content_delivery_off",
+      "label": "Disable Start ads and suggestions",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Stop Start-menu suggestions, silent app installs and preinstalled app pushes.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_content_delivery_off"
+      },
+      "tags": [
+        "shell",
+        "privacy"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_edge_background_off",
+      "label": "Stop Edge running in the background",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set Edge BackgroundModeEnabled=0 so the browser does not keep background processes alive.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_edge_background_off"
+      },
+      "tags": [
+        "shell",
+        "background"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_ceip_tasks_off",
+      "label": "Disable CEIP scheduled tasks",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Disable the Customer Experience Improvement Program and Application Experience upload tasks.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_ceip_tasks_off"
+      },
+      "tags": [
+        "privacy",
+        "tasks"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_services_extended",
+      "label": "Disable extra background services",
+      "family": "windows",
+      "risk": "aggressive",
+      "description": "Disable a curated set of non-essential services: RetailDemo, MapsBroker, WMPNetworkSvc, PhoneSvc, Fax, RemoteRegistry and Geolocation.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_services_extended"
+      },
+      "tags": [
+        "services",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_empty_working_sets",
+      "label": "Trim working sets now",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Ask every user process to release its unused working set. One-shot; Windows refills the pages on demand.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_empty_working_sets"
+      },
+      "tags": [
+        "memory",
+        "one-shot"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_windowed_game_opt",
+      "label": "Optimize windowed games",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set DirectXUserGlobalSettings SwapEffectUpgradeEnable=1 so windowed/borderless games use the modern swap path.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_windowed_game_opt"
+      },
+      "tags": [
+        "graphics",
+        "fullscreen"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_game_mode_flags",
+      "label": "Enable Windows Game Mode flags",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set AllowAutoGameMode=1 and AutoGameModeEnabled=1 under GameBar.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_game_mode_flags"
+      },
+      "tags": [
+        "gaming",
+        "scheduler"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "win_fso_flags",
+      "label": "Fullscreen optimizations for GameLoop",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Add the fullscreen-optimization compatibility flags to GameLoop's executables, preserving any existing layer flags.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_fso_flags"
+      },
+      "tags": [
+        "gameloop",
+        "fullscreen"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "win_msmq_tcp_nodelay",
+      "label": "MSMQ: disable Nagle",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set TCPNoDelay=1 under MSMQ Parameters.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_msmq_tcp_nodelay"
+      },
+      "tags": [
+        "network",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_io_page_lock_limit",
+      "label": "Raise IoPageLockLimit",
+      "family": "windows",
+      "risk": "danger",
+      "description": "Set IoPageLockLimit=131072 (128 MB) so more I/O can be locked in memory. Helps heavy disk streams; can starve low-RAM systems.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_io_page_lock_limit"
+      },
+      "tags": [
+        "memory",
+        "danger"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_system_cooling_active",
+      "label": "System cooling policy: active",
+      "family": "windows",
+      "risk": "safe",
+      "description": "Set the processor cooling policy to Active so the fan ramps before the CPU downclocks.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_system_cooling_active"
+      },
+      "tags": [
+        "power",
+        "thermal"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "win_fth_disable",
+      "label": "Disable Fault Tolerant Heap",
+      "family": "windows",
+      "risk": "moderate",
+      "description": "Set FTH Enabled=0. FTH silently shims crashing apps and adds overhead; disabling it makes real crashes visible.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "win_fth_disable"
+      },
+      "tags": [
+        "stability"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "power_epp_zero",
+      "label": "Intel Speed Shift EPP = 0",
+      "family": "power",
+      "risk": "aggressive",
+      "description": "Set the energy-performance preference to 0 on AC and battery. Lets the CPU pick maximum frequency sooner; costs power and heat.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "power_epp_zero"
+      },
+      "tags": [
+        "intel",
+        "cpu",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true,
+        "cpu_vendor": "intel"
+      }
+    },
+    {
+      "id": "power_cstate_limit",
+      "label": "Disable processor idle states",
+      "family": "power",
+      "risk": "aggressive",
+      "description": "Set IDLEDISABLE=1 for AC and battery so the CPU does not enter deep C-states. Raises idle power and heat.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "power_cstate_limit"
+      },
+      "tags": [
+        "cpu",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "power_boost_policy_max",
+      "label": "Boost policy: maximum",
+      "family": "power",
+      "risk": "aggressive",
+      "description": "Set PERFBOOSTPOL=100 so the processor boosts aggressively when a game thread needs it.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "power_boost_policy_max"
+      },
+      "tags": [
+        "cpu",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "power_pcie_aspm_off",
+      "label": "Disable PCIe ASPM",
+      "family": "power",
+      "risk": "aggressive",
+      "description": "Set the PCI Express link state power management to Off. Removes a common source of micro-stutter; adds a little idle power.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "power_pcie_aspm_off"
+      },
+      "tags": [
+        "pcie",
+        "latency",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "power_disk_sleep_never",
+      "label": "Never sleep the disk",
+      "family": "power",
+      "risk": "moderate",
+      "description": "Set the disk idle timeout to 0 so the emulator's disk image is never spun down mid-session.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "power_disk_sleep_never"
+      },
+      "tags": [
+        "storage"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "gpu_nvidia_scheduler_tweaks",
+      "label": "NVIDIA: Direct Flip + GPU timer",
+      "family": "gpu",
+      "risk": "moderate",
+      "description": "Set EnableDirectFlip=1, EnableIndependentFlip=1, UseGpuTimer=1 and per-core DPC scheduling on nvlddmkm.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_nvidia_scheduler_tweaks"
+      },
+      "tags": [
+        "nvidia",
+        "scheduler"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "nvidia"
+      }
+    },
+    {
+      "id": "gpu_nvidia_hdcp_off",
+      "label": "NVIDIA: disable HDCP",
+      "family": "gpu",
+      "risk": "moderate",
+      "description": "Disable HDCP 2.2 initialization on the NVIDIA GPU class key. Removes display-path overhead when no protected content is played.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_nvidia_hdcp_off"
+      },
+      "tags": [
+        "nvidia",
+        "display"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "nvidia"
+      }
+    },
+    {
+      "id": "gpu_nvidia_preemption_off",
+      "label": "NVIDIA: disable driver preemption",
+      "family": "gpu",
+      "risk": "aggressive",
+      "description": "Disable mid-buffer and async preemption on nvlddmkm. Can reduce micro-stutter; a hung GPU command can stall longer.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_nvidia_preemption_off"
+      },
+      "tags": [
+        "nvidia",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "nvidia"
+      }
+    },
+    {
+      "id": "gpu_nvidia_telemetry_off",
+      "label": "NVIDIA: disable telemetry",
+      "family": "gpu",
+      "risk": "moderate",
+      "description": "Opt out of NVIDIA telemetry, stop and disable NvTelemetryContainer, and disable its scheduled tasks.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_nvidia_telemetry_off"
+      },
+      "tags": [
+        "nvidia",
+        "privacy"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "gpu_nvidia_profiling_access",
+      "label": "NVIDIA: allow GPU counter access",
+      "family": "gpu",
+      "risk": "moderate",
+      "description": "Set RmProfilingAdminOnly=0 so GPU performance counters can be read without elevation.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_nvidia_profiling_access"
+      },
+      "tags": [
+        "nvidia",
+        "diagnostic"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "nvidia"
+      }
+    },
+    {
+      "id": "gpu_nvidia_gsp_firmware",
+      "label": "NVIDIA: enable GSP firmware",
+      "family": "gpu",
+      "risk": "moderate",
+      "description": "Enable the GPU System Processor firmware on the NVIDIA class key. Usually lowers latency on RTX 20-series and newer.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_nvidia_gsp_firmware"
+      },
+      "tags": [
+        "nvidia",
+        "firmware"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "nvidia"
+      }
+    },
+    {
+      "id": "gpu_nvidia_msi_mode",
+      "label": "NVIDIA: MSI interrupt mode",
+      "family": "gpu",
+      "risk": "moderate",
+      "description": "Set MSISupported=1 and MessageNumberLimit=2 on the NVIDIA PCI device. Lowers DPC latency on many boards. Reboot.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_nvidia_msi_mode"
+      },
+      "tags": [
+        "nvidia",
+        "latency"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "gpu_nvidia_watchdog_timeout",
+      "label": "NVIDIA: extend RM watchdog",
+      "family": "gpu",
+      "risk": "aggressive",
+      "description": "Raise the NVIDIA RM watchdog timeout to 10 seconds so a long shader compile is not mistaken for a driver hang.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_nvidia_watchdog_timeout"
+      },
+      "tags": [
+        "nvidia",
+        "stability"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "nvidia"
+      }
+    },
+    {
+      "id": "gpu_amd_ulps_off",
+      "label": "AMD: disable ULPS",
+      "family": "gpu",
+      "risk": "moderate",
+      "description": "Disable Ultra Low Power State on the AMD GPU class key. Stops clock ramp delays when a frame burst starts.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_amd_ulps_off"
+      },
+      "tags": [
+        "amd",
+        "power"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "amd"
+      }
+    },
+    {
+      "id": "gpu_amd_crash_defender_off",
+      "label": "AMD: disable Crash Defender",
+      "family": "gpu",
+      "risk": "moderate",
+      "description": "Stop and disable the AMD Crash Defender service. It can mask real driver resets and adds a background process.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_amd_crash_defender_off"
+      },
+      "tags": [
+        "amd",
+        "services"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "amd"
+      }
+    },
+    {
+      "id": "gpu_amd_flip_queue",
+      "label": "AMD: flip queue size 1",
+      "family": "gpu",
+      "risk": "aggressive",
+      "description": "Set FlipQueueSize=1 on the AMD GPU class key to reduce render-ahead and input lag. May lower average FPS.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_amd_flip_queue"
+      },
+      "tags": [
+        "amd",
+        "latency",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "amd"
+      }
+    },
+    {
+      "id": "gpu_amd_surface_format",
+      "label": "AMD: surface format optimization",
+      "family": "gpu",
+      "risk": "moderate",
+      "description": "Enable AMD surface-format replacements and Catalyst AI texture optimization on the GPU class key.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_amd_surface_format"
+      },
+      "tags": [
+        "amd",
+        "graphics"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "amd"
+      }
+    },
+    {
+      "id": "gpu_amd_stutter_mode_off",
+      "label": "AMD: disable StutterMode",
+      "family": "gpu",
+      "risk": "aggressive",
+      "description": "Set StutterMode=0 on the AMD GPU class key. Only relevant on Polaris through RDNA2; newer cards ignore it.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "gpu_amd_stutter_mode_off"
+      },
+      "tags": [
+        "amd",
+        "stutter",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true,
+        "gpu_vendor": "amd"
+      }
+    },
+    {
+      "id": "net_interrupt_moderation_off",
+      "label": "Disable adapter interrupt moderation",
+      "family": "network",
+      "risk": "aggressive",
+      "description": "Disable interrupt moderation on active physical adapters. Lowers latency but raises CPU interrupts; benchmark it.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "net_interrupt_moderation_off"
+      },
+      "tags": [
+        "network",
+        "latency",
+        "aggressive"
+      ],
+      "reversible": true,
+      "default_enabled": false,
+      "needs_reboot": true,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "net_nic_power_saving_off",
+      "label": "Disable NIC power saving",
+      "family": "network",
+      "risk": "moderate",
+      "description": "Disable 'allow the computer to turn off this device' on active physical adapters.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "net_nic_power_saving_off"
+      },
+      "tags": [
+        "network",
+        "power"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "net_dns_cache_tuning",
+      "label": "Hot DNS resolver cache",
+      "family": "network",
+      "risk": "moderate",
+      "description": "Raise the DNS positive cache TTL to 24 hours so repeated lookups stay local.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "net_dns_cache_tuning"
+      },
+      "tags": [
+        "network",
+        "dns"
+      ],
+      "reversible": true,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "clean_gameloop_shader_cache",
+      "label": "Clean GameLoop shader cache",
+      "family": "cleanup",
+      "risk": "moderate",
+      "description": "Delete GameLoop's ShaderCache and GPU cache folders. They regenerate; stale shaders are a common cause of post-update stutter.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_gameloop_shader_cache"
+      },
+      "tags": [
+        "cleanup",
+        "gameloop"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "clean_gameloop_web_cache",
+      "label": "Clean AppMarket web cache",
+      "family": "cleanup",
+      "risk": "moderate",
+      "description": "Delete the AppMarket/CEF Cache, Code Cache, GPUCache and WebKit folders.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_gameloop_web_cache"
+      },
+      "tags": [
+        "cleanup",
+        "gameloop"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "clean_gameloop_logs",
+      "label": "Clean GameLoop logs",
+      "family": "cleanup",
+      "risk": "safe",
+      "description": "Delete loose GameLoop log files so the next benchmark run is easy to read.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_gameloop_logs"
+      },
+      "tags": [
+        "cleanup",
+        "gameloop"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "clean_mobile_shared_logs",
+      "label": "Clean MobileGamePCShared logs",
+      "family": "cleanup",
+      "risk": "safe",
+      "description": "Delete logcat, dump and log artifacts under MobileGamePCShared.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_mobile_shared_logs"
+      },
+      "tags": [
+        "cleanup",
+        "gameloop"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "emulator": "gameloop"
+      }
+    },
+    {
+      "id": "clean_nvidia_shader_caches",
+      "label": "Clean NVIDIA shader caches",
+      "family": "cleanup",
+      "risk": "safe",
+      "description": "Delete NVIDIA DXCache and GLCache. They rebuild on demand.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_nvidia_shader_caches"
+      },
+      "tags": [
+        "cleanup",
+        "nvidia"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "clean_amd_shader_caches",
+      "label": "Clean AMD shader caches",
+      "family": "cleanup",
+      "risk": "safe",
+      "description": "Delete AMD DxCache and VkCache. They rebuild on demand.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_amd_shader_caches"
+      },
+      "tags": [
+        "cleanup",
+        "amd"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "clean_directx_shader_cache",
+      "label": "Clean DirectX shader cache",
+      "family": "cleanup",
+      "risk": "safe",
+      "description": "Delete the per-user D3DSCache folder.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_directx_shader_cache"
+      },
+      "tags": [
+        "cleanup",
+        "graphics"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "clean_softwaredistribution",
+      "label": "Purge Windows Update cache",
+      "family": "cleanup",
+      "risk": "aggressive",
+      "description": "Stop wuauserv and delete the SoftwareDistribution download cache. Windows re-downloads what it still needs.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_softwaredistribution"
+      },
+      "tags": [
+        "cleanup",
+        "windows"
+      ],
+      "reversible": false,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "clean_delivery_optimization_cache",
+      "label": "Purge Delivery Optimization cache",
+      "family": "cleanup",
+      "risk": "moderate",
+      "description": "Delete the Delivery Optimization download cache.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_delivery_optimization_cache"
+      },
+      "tags": [
+        "cleanup",
+        "windows"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "clean_crash_dumps_wer",
+      "label": "Clear crash dumps and WER",
+      "family": "cleanup",
+      "risk": "safe",
+      "description": "Delete per-user crash dumps, minidumps and queued Windows Error Reporting files.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_crash_dumps_wer"
+      },
+      "tags": [
+        "cleanup",
+        "windows"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false
+    },
+    {
+      "id": "clean_windows_old",
+      "label": "Remove Windows.old",
+      "family": "cleanup",
+      "risk": "danger",
+      "description": "Delete C:\\Windows.old. This removes the rollback copy of the previous Windows install; it cannot be undone.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_windows_old"
+      },
+      "tags": [
+        "cleanup",
+        "danger"
+      ],
+      "reversible": false,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "clean_dism_component",
+      "label": "Deep component-store cleanup",
+      "family": "cleanup",
+      "risk": "danger",
+      "description": "Run DISM /StartComponentCleanup /ResetBase. Frees component-store space but makes installed updates non-removable.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_dism_component"
+      },
+      "tags": [
+        "cleanup",
+        "danger"
+      ],
+      "reversible": false,
+      "default_enabled": false,
+      "needs_reboot": false,
+      "requires": {
+        "elevated": true
+      }
+    },
+    {
+      "id": "clean_aow_drv_log",
+      "label": "Clean C:\\aow_drv.log",
+      "family": "cleanup",
+      "risk": "safe",
+      "description": "Delete the legacy GameLoop AOW driver log. It can grow without bound.",
+      "handler": "legacy.apply",
+      "args": {
+        "profile": "clean_aow_drv_log"
+      },
+      "tags": [
+        "cleanup",
+        "gameloop"
+      ],
+      "reversible": false,
+      "default_enabled": true,
+      "needs_reboot": false
     }
   ]
 }

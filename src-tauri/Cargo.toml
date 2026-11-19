@@ -1,6 +1,6 @@
 [package]
 name = "bloodlust-optimizer"
-version = "0.1.0"
+version = "1.2.0"
 description = "Bloodlust Optimizer - emulator and Windows performance tuning"
 authors = ["Telegram: @Alpha0NemesiSS"]
 edition = "2021"

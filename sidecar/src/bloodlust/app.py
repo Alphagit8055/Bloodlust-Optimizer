@@ -254,6 +254,10 @@ class App:
     def action_list(self, params: dict) -> list[dict]:
         self._require_executor()
         family = params.get("family")
+        # Declaration order is the order the catalog author chose: related
+        # tweaks sit next to each other instead of being shuffled by id.
+        order = {aid: i for i, aid in enumerate(self.catalog.actions)}
+        family_order = {fid: fam.order for fid, fam in self.catalog.families.items()}
         out = []
         for spec in self.catalog.actions.values():
             if family and spec.family != family:
@@ -270,7 +274,7 @@ class App:
                     "risk_ceiling_ok": ceiling_ok,
                 }
             )
-        out.sort(key=lambda a: (a["family"], a["id"]))
+        out.sort(key=lambda a: (family_order.get(a["family"], 999), order[a["id"]]))
         return out
 
     def action_describe(self, params: dict) -> dict:

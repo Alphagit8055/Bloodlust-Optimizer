@@ -8,7 +8,7 @@ from __future__ import annotations
 
 APP_NAME = "Bloodlust Optimizer"
 APP_SHORT = "Bloodlust"
-APP_VERSION = "0.1.0"
+APP_VERSION = "1.2.0"
 DEVELOPER = "Telegram: @Alpha0NemesiSS"
 DEVELOPER_HANDLE = "@Alpha0NemesiSS"
 

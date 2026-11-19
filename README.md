@@ -27,17 +27,18 @@ to the registry.
 
 ## What it does
 
-33 actions across 7 families, each gated to the hardware it actually applies to:
+197 actions across 8 families, each gated to the hardware it actually applies to:
 
 | Family | Examples |
 |---|---|
 | **System Report** | Hardware inventory, pending-reboot check, "why is this locked?" |
-| **Power & CPU** | Ultimate Performance plan, no core parking, full clock, wireless adapter power saving |
-| **Network** | TCP autotuning, delayed-ACK, Cloudflare DNS, DNS flush |
-| **GPU & Scheduling** | HAGS, TDR delay, route the emulator to the dedicated GPU |
-| **Windows Shell** | Game Mode, Game DVR, fullscreen optimisations, MMCSS Games class, pointer acceleration |
-| **GameLoop** | Install report, cache clear, autostart, Defender exclusion |
-| **Emulator Guest (ADB)** | Disable guest animations, hide touch indicators |
+| **Power & CPU** | Ultimate Performance plan, no core parking, full clock, Speed Shift EPP, PCIe ASPM off |
+| **Network** | TCP autotuning, delayed-ACK, Nagle off on every interface, adapter power saving |
+| **GPU & Scheduling** | HAGS, TDR delay, NVIDIA/AMD driver keys, MSI interrupts, route the emulator to the dedicated GPU |
+| **Windows Shell** | Game Mode, Game DVR, scheduler quanta, services, MMCSS Games class, input queues |
+| **GameLoop** | Engine registry keys, renderer/VSync presets, Config.ini, launcher priorities, IFEO |
+| **Emulator Guest (ADB)** | Animations, LMK, kernel tuning, build.prop, Facebook/Play background apps |
+| **Cleanup & Junk** | Shader caches, logs, WER dumps, Delivery Optimization, Windows Update cache |
 
 Everything is gated **fail-closed**: if the app cannot *prove* your hardware
 matches what an action needs, the action is locked and it tells you why. A

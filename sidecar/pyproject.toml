@@ -1,6 +1,6 @@
 [project]
 name = "bloodlust-engine"
-version = "0.1.0"
+version = "1.2.0"
 description = "Bloodlust Optimizer tuning engine (sidecar)"
 requires-python = ">=3.10"
 readme = "../README.md"

@@ -186,3 +186,40 @@ Only settings in `actions/adb.ALLOWED_SETTINGS` can be changed, and only with
 values from that table. If you need a new key, add it there — but think about
 whether it belongs. The guest namespace is wide and some of it is genuinely
 risky, so the allowlist is short on purpose.
+
+---
+
+## Adding a tweak to the legacy set
+
+Most of the catalog is a port of the old GameLoop Optimizer list, and all of it
+goes through one handler: `legacy.apply`. The operations a profile may perform
+live in `sidecar/src/bloodlust/actions/legacy.py`, compiled into the binary; the
+catalog only carries the label, description and `profile` argument.
+
+```python
+P(
+    "gl_vsync_off", "VSync: off", "gameloop", "safe",
+    "Disable the emulator's V-Sync. Lower input latency; enable it again only if tearing is the real problem.",
+    [R(TENCENT, "VSyncEnabled", 0, hive="HKCU")],
+    tags=("gameloop", "latency"), requires={"emulator": "gameloop"},
+)
+```
+
+Then regenerate the catalog rows instead of editing them by hand:
+
+```bash
+python scripts/sync_legacy_catalog.py
+```
+
+The handler refuses unless `profile == ctx.action_id`, so a catalog row can be
+renamed but never pointed at another row's operations. Keep these rules:
+
+* one `P()` per tweak; the id is what users see in the undo list;
+* `gl_*`/`adb_*`/`win_*`/`gpu_*`/`net_*`/`power_*`/`clean_*` ids, matching the
+  family prefix;
+* do not set `default_enabled` on two contradictory presets — see
+  `_NOT_BASELINE`, which keeps batch runs from writing the same value twice;
+* prefer the closed operation vocabulary (`reg`, `del`, `cmd`, `svc`, `adb`,
+  `powercfg`, `ini`, `dyn`) over a raw PowerShell string. A `dyn` routine must be
+  registered in `_DYNAMIC` and its script is compiled in, never catalog-supplied.
+

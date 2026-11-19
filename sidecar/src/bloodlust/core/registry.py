@@ -62,6 +62,7 @@ class RegistryBackend(Protocol):
     def delete_value(self, hive: str, path: str, name: Optional[str]) -> None: ...
     def key_exists(self, hive: str, path: str) -> bool: ...
     def delete_key(self, hive: str, path: str) -> None: ...
+    def subkeys(self, hive: str, path: str) -> list[str]: ...
 
 
 class MemoryBackend:
@@ -99,6 +100,15 @@ class MemoryBackend:
 
     def delete_key(self, hive: str, path: str) -> None:
         self._keys.pop(self._k(hive, path), None)
+
+    def subkeys(self, hive: str, path: str) -> list[str]:
+        prefix = path.rstrip("\\") + "\\"
+        found = {
+            p[len(prefix):].split("\\", 1)[0]
+            for (h, p) in self._keys
+            if h == hive and p.startswith(prefix)
+        }
+        return sorted(n for n in found if n)
 
     def snapshot(self) -> dict:
         return {f"{h}\\{p}": dict(v) for (h, p), v in self._keys.items()}
@@ -162,6 +172,23 @@ class WinregBackend:
             return
         except OSError as exc:
             raise RegistryError(f"delete key {hive}\\{path}: {exc}")
+
+    def subkeys(self, hive: str, path: str) -> list[str]:
+        out: list[str] = []
+        try:
+            with self._winreg.OpenKey(self._hive(hive), path) as k:
+                i = 0
+                while True:
+                    try:
+                        out.append(self._winreg.EnumKey(k, i))
+                    except OSError:
+                        break
+                    i += 1
+        except FileNotFoundError:
+            return []
+        except OSError as exc:
+            raise RegistryError(f"enumerate subkeys {hive}\\{path}: {exc}")
+        return out
 
 
 def default_backend() -> RegistryBackend:
