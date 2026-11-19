@@ -104,6 +104,14 @@ jobs:
         with:
           targets: x86_64-pc-windows-msvc
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Node dependencies (Tauri CLI)
+        run: npm ci
+
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: "src-tauri -> target"
