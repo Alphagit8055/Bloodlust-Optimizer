@@ -273,10 +273,175 @@ def set_ipv6_disabled(ctx, args) -> ActionResult:
     return result
 
 
+@action(
+    args={
+        "capability": {
+            "type": str,
+            "choices": ("enabled", "disabled", "default"),
+            "default": "enabled",
+        }
+    },
+    doc="Control Explicit Congestion Notification (ECN). Used by some networks to signal congestion before dropping packets; 'enabled' is the better choice on most wired connections.",
+)
+def set_ecn(ctx, args) -> ActionResult:
+    want = args.get("capability", "enabled")
+    result = ActionResult(action_id=ctx.action_id)
+
+    show = ctx.shell.run(
+        ["netsh", "interface", "tcp", "show", "global"],
+        record=False,
+        describe="read TCP global settings",
+    )
+    current = None
+    if show.ok:
+        m = re.search(r"ECN\s*Capability\s*:\s*(\w+)", show.stdout, re.IGNORECASE)
+        if m:
+            current = m.group(1).strip().lower()
+
+    if current == want:
+        result.message = f"ECN capability is already '{want}'"
+        return result
+
+    ctx.shell.record_restore(
+        ["netsh", "interface", "tcp", "set", "global", f"ecncapability={current or 'default'}"],
+        describe=f"restore ECN capability to {current or 'default'}",
+    )
+
+    out = ctx.shell.run(
+        ["netsh", "interface", "tcp", "set", "global", f"ecncapability={want}"],
+        describe=f"set ECN capability to {want}",
+    )
+    if not out.ok and not out.skipped:
+        raise RuntimeError(f"netsh failed: {out.stderr or out.stdout}")
+
+    result.add(
+        Change(
+            kind=ChangeKind.COMMAND,
+            target="netsh interface tcp",
+            detail=f"ecncapability: {current or 'unknown'} -> {want}",
+            reversible=True,
+            previous=current,
+        )
+    )
+    return result
+
+
+@action(
+    args={
+        "state": {
+            "type": str,
+            "choices": ("enabled", "disabled", "default"),
+            "default": "enabled",
+        }
+    },
+    doc="Control Receive-Side Scaling. RSS spreads network interrupts across cores; 'enabled' helps on multi-core systems under heavy network traffic.",
+)
+def set_rss(ctx, args) -> ActionResult:
+    want = args.get("state", "enabled")
+    result = ActionResult(action_id=ctx.action_id)
+
+    show = ctx.shell.run(
+        ["netsh", "interface", "tcp", "show", "global"],
+        record=False,
+        describe="read TCP global settings",
+    )
+    current = None
+    if show.ok:
+        m = re.search(r"Receive-Side\s*Scaling\s*State\s*:\s*(\w+)", show.stdout, re.IGNORECASE)
+        if m:
+            current = m.group(1).strip().lower()
+
+    if current == want:
+        result.message = f"RSS is already '{want}'"
+        return result
+
+    ctx.shell.record_restore(
+        ["netsh", "interface", "tcp", "set", "global", f"rss={current or 'default'}"],
+        describe=f"restore RSS to {current or 'default'}",
+    )
+
+    out = ctx.shell.run(
+        ["netsh", "interface", "tcp", "set", "global", f"rss={want}"],
+        describe=f"set RSS to {want}",
+    )
+    if not out.ok and not out.skipped:
+        raise RuntimeError(f"netsh failed: {out.stderr or out.stdout}")
+
+    result.add(
+        Change(
+            kind=ChangeKind.COMMAND,
+            target="netsh interface tcp",
+            detail=f"rss: {current or 'unknown'} -> {want}",
+            reversible=True,
+            previous=current,
+        )
+    )
+    return result
+
+
+@action(doc="Save the current DNS configuration of every active adapter to a JSON snapshot (never changes anything). Useful before changing DNS, since the engine restores DHCP rather than the previous static value.")
+def export_dns_snapshot(ctx, args) -> ActionResult:
+    import datetime
+    import json as _json
+
+    from ..core import paths
+
+    result = ActionResult(action_id=ctx.action_id)
+    adapters = _active_adapters(ctx)
+    snapshot = []
+    for adapter in adapters:
+        name = str(adapter.get("Name") or "")
+        if not name:
+            continue
+        show = ctx.shell.run(
+            ["netsh", "interface", "ip", "show", "dns", f"name={name}"],
+            record=False,
+            describe=f"read DNS for {name}",
+        )
+        snapshot.append(
+            {
+                "name": name,
+                "guid": adapter.get("InterfaceGuid"),
+                "description": adapter.get("InterfaceDescription"),
+                "dns_raw": show.stdout if show.ok else "<read failed>",
+            }
+        )
+
+    out_dir = paths.data_dir() / "snapshots"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    path = out_dir / f"dns-{stamp}.json"
+    path.write_text(
+        _json.dumps(
+            {
+                "taken_at": stamp,
+                "source": "netsh interface ip show dns",
+                "adapters": snapshot,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result.add(
+        Change(
+            kind=ChangeKind.NOTE,
+            target=str(path),
+            detail=f"DNS snapshot of {len(snapshot)} adapter(s) written",
+            reversible=False,
+        )
+    )
+    result.message = f"DNS snapshot saved to {path}"
+    return result
+
+
 HANDLERS = {
     "network.set_tcp_autotuning": set_tcp_autotuning,
     "network.set_static_dns": set_static_dns,
     "network.reduce_delayed_ack": reduce_delayed_ack,
     "network.flush_dns": flush_dns,
     "network.set_ipv6_disabled": set_ipv6_disabled,
+    "network.set_ecn": set_ecn,
+    "network.set_rss": set_rss,
+    "network.export_dns_snapshot": export_dns_snapshot,
 }

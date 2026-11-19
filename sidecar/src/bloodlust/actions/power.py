@@ -7,7 +7,7 @@ core it is running on shows up directly as a frame-time spike.
 
 from __future__ import annotations
 
-from ..core.result import ActionResult
+from ..core.result import ActionResult, Change, ChangeKind
 from .base import (
     SET_CPMINCORES,
     SET_PERFBOOSTMODE,
@@ -197,6 +197,41 @@ def set_usb_selective_suspend(ctx, args) -> ActionResult:
     return result
 
 
+@action(
+    args={"enabled": {"type": bool, "default": False}},
+    doc="Toggle hibernate. Off reclaims disk space from the hiberfil.sys file; the PC can no longer hibernate until it is turned back on.",
+)
+def set_hibernate(ctx, args) -> ActionResult:
+    enabled = bool(args.get("enabled", False))
+    flag = "/hibernate"
+    result = ActionResult(action_id=ctx.action_id)
+
+    out = ctx.shell.run(
+        ["powercfg", flag, "on" if enabled else "off"],
+        describe=f"{'enable' if enabled else 'disable'} hibernate",
+        reversible=True,
+    )
+    ctx.shell.record_restore(
+        ["powercfg", flag, "off" if enabled else "on"],
+        describe=f"restore hibernate to {'off' if enabled else 'on'}",
+    )
+    if not out.ok and not out.skipped:
+        raise RuntimeError(f"powercfg /hibernate failed: {out.stderr or out.stdout}")
+
+    result.add(
+        Change(
+            kind=ChangeKind.COMMAND,
+            target="powercfg /hibernate",
+            detail=f"hibernate {'enabled' if enabled else 'disabled'}",
+            reversible=True,
+        )
+    )
+    if not enabled:
+        result.warn("the PC can no longer hibernate; run this again with enabled to restore it")
+    result.message = f"hibernate {'enabled' if enabled else 'disabled'}"
+    return result
+
+
 HANDLERS = {
     "power.set_performance_scheme": set_performance_scheme,
     "power.set_min_processor_state": set_min_processor_state,
@@ -204,4 +239,5 @@ HANDLERS = {
     "power.set_boost_policy": set_boost_policy,
     "power.wireless_max_performance": wireless_max_performance,
     "power.set_usb_selective_suspend": set_usb_selective_suspend,
+    "power.set_hibernate": set_hibernate,
 }

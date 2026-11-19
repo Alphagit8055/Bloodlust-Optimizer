@@ -19,6 +19,8 @@ _MMCS_GAMES = _MMCS + r"\Tasks\Games"
 _VISUAL_FX = r"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects"
 _MOUSE = r"Control Panel\Mouse"
 _POWER_THROTTLE = r"SYSTEM\CurrentControlSet\Control\Power\PowerThrottling"
+_DESKTOP = r"Control Panel\Desktop"
+_APPPRIVACY = r"SOFTWARE\Policies\Microsoft\Windows\AppPrivacy"
 
 
 @action(
@@ -223,6 +225,76 @@ def set_power_throttling(ctx, args) -> ActionResult:
     return result
 
 
+@action(
+    args={"timeout_ms": {"type": int, "min": 0, "max": 200000, "default": 0}},
+    doc="How long a window must wait before it may steal focus. 0 lets the foreground window be interrupted immediately, which keeps the emulator responsive when launched.",
+)
+def set_foreground_lock_timeout(ctx, args) -> ActionResult:
+    timeout = int(args.get("timeout_ms", 0))
+    change = ctx.reg.set_value(
+        "HKCU", _DESKTOP, "ForegroundLockTimeout", reg.REG_DWORD, timeout,
+        describe=f"foreground lock timeout = {timeout} ms",
+    )
+    result = ActionResult(action_id=ctx.action_id)
+    if change:
+        result.add(change)
+        result.message = f"foreground lock timeout set to {timeout} ms"
+    else:
+        result.message = f"foreground lock timeout was already {timeout} ms"
+    return result
+
+
+@action(
+    args={"disabled": {"type": bool, "default": True}},
+    doc="Stop Windows from running (and waking) Store app background processes. Fewer background wake-ups while the emulator has the machine.",
+)
+def set_background_apps(ctx, args) -> ActionResult:
+    disabled = bool(args.get("disabled", True))
+    result = ActionResult(action_id=ctx.action_id)
+    if disabled:
+        # 2 = force deny. Removing the policy restores the default behaviour.
+        change = ctx.reg.set_value(
+            "HKLM", _APPPRIVACY, "LetAppsRunInBackground", reg.REG_DWORD, 2,
+            describe="background Store apps = denied",
+        )
+    else:
+        change = ctx.reg.delete_value(
+            "HKLM", _APPPRIVACY, "LetAppsRunInBackground",
+            describe="restore default background-app policy",
+        )
+    if change:
+        result.add(change)
+        result.message = (
+            "background Store apps disabled" if disabled
+            else "background Store app policy restored to default"
+        )
+    else:
+        result.message = (
+            "background Store apps were already disabled" if disabled
+            else "background Store app policy was already at default"
+        )
+    return result
+
+
+@action(
+    args={"delay_ms": {"type": int, "min": 0, "max": 400, "default": 0}},
+    doc="How long menus wait before opening. 0 (the floor) makes right-click menus in the emulator host feel instant.",
+)
+def set_menu_show_delay(ctx, args) -> ActionResult:
+    delay = int(args.get("delay_ms", 0))
+    change = ctx.reg.set_value(
+        "HKCU", _DESKTOP, "MenuShowDelay", reg.REG_SZ, str(delay),
+        describe=f"menu show delay = {delay} ms",
+    )
+    result = ActionResult(action_id=ctx.action_id)
+    if change:
+        result.add(change)
+        result.message = f"menu show delay set to {delay} ms"
+    else:
+        result.message = f"menu show delay was already {delay} ms"
+    return result
+
+
 HANDLERS = {
     "windows.set_game_mode": set_game_mode,
     "windows.set_game_dvr": set_game_dvr,
@@ -231,4 +303,7 @@ HANDLERS = {
     "windows.set_visual_effects": set_visual_effects,
     "windows.set_pointer_acceleration": set_pointer_acceleration,
     "windows.set_power_throttling": set_power_throttling,
+    "windows.set_foreground_lock_timeout": set_foreground_lock_timeout,
+    "windows.set_background_apps": set_background_apps,
+    "windows.set_menu_show_delay": set_menu_show_delay,
 }

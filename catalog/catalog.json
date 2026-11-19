@@ -1,16 +1,65 @@
 {
   "schema": 1,
-  "catalog_version": "2026.09.27-1",
+  "catalog_version": "2026.11.19-1",
   "min_app_version": "0.1.0",
   "notice": "Every action here maps to a handler compiled into the app. Editing this file can retune existing actions; it cannot add new ones.",
   "families": [
-    { "id": "audit", "label": "System Report", "icon": "stethoscope", "order": 10, "description": "Read-only. Nothing here changes your machine." },
-    { "id": "power", "label": "Power & CPU", "icon": "bolt", "order": 20, "description": "Stop Windows downclocking or parking the core your game is running on." },
-    { "id": "network", "label": "Network", "icon": "signal", "order": 30, "description": "Latency and throughput. Fixes here affect the whole system, not just the emulator." },
-    { "id": "gpu", "label": "GPU & Scheduling", "icon": "cpu", "order": 40, "description": "Which GPU renders, and how the scheduler treats its threads." },
-    { "id": "windows", "label": "Windows Shell", "icon": "window", "order": 50, "description": "Overlays, animations and input." },
-    { "id": "gameloop", "label": "GameLoop", "icon": "gamepad", "order": 60, "description": "Install-level maintenance. Engine settings stay in GameLoop's own UI." },
-    { "id": "adb", "label": "Emulator Guest (ADB)", "icon": "android", "order": 70, "description": "Settings inside the Android guest. A factory reset of the emulator reverts them all." }
+    {
+      "id": "audit",
+      "label": "System Report",
+      "icon": "stethoscope",
+      "order": 10,
+      "description": "Read-only. Nothing here changes your machine."
+    },
+    {
+      "id": "power",
+      "label": "Power & CPU",
+      "icon": "bolt",
+      "order": 20,
+      "description": "Stop Windows downclocking or parking the core your game is running on."
+    },
+    {
+      "id": "network",
+      "label": "Network",
+      "icon": "signal",
+      "order": 30,
+      "description": "Latency and throughput. Fixes here affect the whole system, not just the emulator."
+    },
+    {
+      "id": "gpu",
+      "label": "GPU & Scheduling",
+      "icon": "cpu",
+      "order": 40,
+      "description": "Which GPU renders, and how the scheduler treats its threads."
+    },
+    {
+      "id": "windows",
+      "label": "Windows Shell",
+      "icon": "window",
+      "order": 50,
+      "description": "Overlays, animations and input."
+    },
+    {
+      "id": "gameloop",
+      "label": "GameLoop",
+      "icon": "gamepad",
+      "order": 60,
+      "description": "Install-level maintenance. Engine settings stay in GameLoop's own UI."
+    },
+    {
+      "id": "adb",
+      "label": "Emulator Guest (ADB)",
+      "icon": "android",
+      "order": 70,
+      "description": "Settings inside the Android guest. A factory reset of the emulator reverts them all."
+    },
+    {
+      "id": "cleanup",
+      "label": "Cleanup & Junk",
+      "icon": "trash",
+      "order": 35,
+      "description": "Files Windows and the emulator regenerate anyway. Nothing here is reversible."
+    }
   ],
   "actions": [
     {
@@ -20,7 +69,9 @@
       "risk": "safe",
       "handler": "audit.report",
       "description": "CPU, GPU, RAM, hypervisor state, elevation and every detected emulator. Read-only.",
-      "tags": ["diagnostic"]
+      "tags": [
+        "diagnostic"
+      ]
     },
     {
       "id": "audit_pending_reboot",
@@ -29,7 +80,9 @@
       "risk": "safe",
       "handler": "audit.check_pending_reboot",
       "description": "A pending reboot silently stops several tweaks from taking effect. Read-only.",
-      "tags": ["diagnostic"]
+      "tags": [
+        "diagnostic"
+      ]
     },
     {
       "id": "audit_explain_blocks",
@@ -38,19 +91,28 @@
       "risk": "safe",
       "handler": "audit.explain_blocks",
       "description": "Lists every unavailable action and the specific requirement it failed. Read-only.",
-      "tags": ["diagnostic"]
+      "tags": [
+        "diagnostic"
+      ]
     },
-
     {
       "id": "power_scheme_performance",
       "label": "Ultimate Performance power plan",
       "family": "power",
       "risk": "moderate",
       "handler": "power.set_performance_scheme",
-      "args": { "scheme": "ultimate" },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "scheme": "ultimate"
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "Creates and activates the Ultimate Performance scheme, falling back to High Performance if the template is unavailable. Undo restores your previous plan.",
-      "tags": ["power", "cpu"]
+      "tags": [
+        "power",
+        "cpu"
+      ]
     },
     {
       "id": "power_min_processor_state",
@@ -58,10 +120,19 @@
       "family": "power",
       "risk": "moderate",
       "handler": "power.set_min_processor_state",
-      "args": { "value": 100, "on_battery": true },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "value": 100,
+        "on_battery": true
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "Sets the minimum processor state to 100% so cores do not downclock between frames. On a laptop this raises idle power draw and heat.",
-      "tags": ["power", "cpu"]
+      "tags": [
+        "power",
+        "cpu"
+      ]
     },
     {
       "id": "power_no_core_parking",
@@ -69,10 +140,18 @@
       "family": "power",
       "risk": "moderate",
       "handler": "power.disable_core_parking",
-      "args": { "value": 100 },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "value": 100
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "Stops Windows parking idle cores. Parking forces the game thread to migrate, which shows up as a hitch.",
-      "tags": ["power", "cpu"]
+      "tags": [
+        "power",
+        "cpu"
+      ]
     },
     {
       "id": "power_boost_aggressive",
@@ -80,11 +159,19 @@
       "family": "power",
       "risk": "moderate",
       "handler": "power.set_boost_policy",
-      "args": { "mode": 2 },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "mode": 2
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "Sets the processor boost mode to Aggressive while plugged in. Leaves the battery policy alone.",
       "default_enabled": false,
-      "tags": ["power", "cpu"]
+      "tags": [
+        "power",
+        "cpu"
+      ]
     },
     {
       "id": "power_wireless_max_performance",
@@ -92,10 +179,18 @@
       "family": "power",
       "risk": "moderate",
       "handler": "power.wireless_max_performance",
-      "args": { "index": 0 },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "index": 0
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "On battery, Windows defaults this to Medium Power Saving, which throttles the radio and is a real source of periodic latency spikes. Sets both AC and DC to maximum performance.",
-      "tags": ["power", "network"]
+      "tags": [
+        "power",
+        "network"
+      ]
     },
     {
       "id": "power_usb_suspend_off",
@@ -103,23 +198,37 @@
       "family": "power",
       "risk": "aggressive",
       "handler": "power.set_usb_selective_suspend",
-      "args": { "enabled": false },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "enabled": false
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "Stops Windows dropping a USB device to save power, which can cause a mouse or controller to stutter or disconnect.",
       "default_enabled": false,
-      "tags": ["power", "input"]
+      "tags": [
+        "power",
+        "input"
+      ]
     },
-
     {
       "id": "net_tcp_autotuning_normal",
       "label": "TCP autotuning: normal",
       "family": "network",
       "risk": "safe",
       "handler": "network.set_tcp_autotuning",
-      "args": { "level": "normal" },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "level": "normal"
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "Restores the Windows default receive-window autotuning. Many 'optimizers' disable it, which is slower on high-latency links, not faster.",
-      "tags": ["network"]
+      "tags": [
+        "network"
+      ]
     },
     {
       "id": "net_flush_dns",
@@ -127,9 +236,14 @@
       "family": "network",
       "risk": "safe",
       "handler": "network.flush_dns",
-      "requires": { "platform": "win32" },
+      "requires": {
+        "platform": "win32"
+      },
       "description": "Clears the resolver cache. Harmless, and worth doing after a router or ISP change.",
-      "tags": ["network", "maintenance"]
+      "tags": [
+        "network",
+        "maintenance"
+      ]
     },
     {
       "id": "net_dns_cloudflare",
@@ -137,11 +251,19 @@
       "family": "network",
       "risk": "moderate",
       "handler": "network.set_static_dns",
-      "args": { "primary": "1.1.1.1", "secondary": "1.0.0.1" },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "primary": "1.1.1.1",
+        "secondary": "1.0.0.1"
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "Sets a static resolver on every active physical adapter. Undo returns the adapter to DHCP-assigned DNS.",
       "default_enabled": false,
-      "tags": ["network"]
+      "tags": [
+        "network"
+      ]
     },
     {
       "id": "net_reduce_delayed_ack",
@@ -149,11 +271,18 @@
       "family": "network",
       "risk": "aggressive",
       "handler": "network.reduce_delayed_ack",
-      "args": { "ack_frequency": 1 },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "ack_frequency": 1
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "Acknowledges every packet immediately and disables Nagle's algorithm per interface. Helps small, frequent packets; slightly increases overhead on bulk transfers.",
       "default_enabled": false,
-      "tags": ["network"]
+      "tags": [
+        "network"
+      ]
     },
     {
       "id": "net_prefer_ipv4",
@@ -161,25 +290,38 @@
       "family": "network",
       "risk": "aggressive",
       "handler": "network.set_ipv6_disabled",
-      "args": { "disabled": true },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "disabled": true
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "needs_reboot": true,
       "description": "Sets the Windows IPv6 component preference to favour IPv4. Only useful when IPv6 routing on your network is broken. Does not fully disable IPv6, which Microsoft advises against.",
       "default_enabled": false,
-      "tags": ["network"]
+      "tags": [
+        "network"
+      ]
     },
-
     {
       "id": "gpu_hags_on",
       "label": "Enable Hardware-Accelerated GPU Scheduling",
       "family": "gpu",
       "risk": "moderate",
       "handler": "nvidia.set_hags",
-      "args": { "enabled": true },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "enabled": true
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "needs_reboot": true,
       "description": "Lets the GPU schedule its own work instead of Windows doing it. Helps on most modern GPUs. A Windows setting that affects every vendor.",
-      "tags": ["gpu"]
+      "tags": [
+        "gpu"
+      ]
     },
     {
       "id": "gpu_tdr_delay",
@@ -187,12 +329,20 @@
       "family": "gpu",
       "risk": "aggressive",
       "handler": "nvidia.set_tdr_delay",
-      "args": { "seconds": 8 },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "seconds": 8
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "needs_reboot": true,
       "description": "A long emulator frame can trip the 2-second watchdog and reset the driver mid-match. Raising this to 8s prevents that. The trade-off: a genuinely hung GPU takes 8s to recover.",
       "default_enabled": false,
-      "tags": ["gpu", "stability"]
+      "tags": [
+        "gpu",
+        "stability"
+      ]
     },
     {
       "id": "gpu_tdr_reset",
@@ -200,10 +350,16 @@
       "family": "gpu",
       "risk": "safe",
       "handler": "nvidia.reset_tdr_delay",
-      "requires": { "platform": "win32", "elevated": true },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "needs_reboot": true,
       "description": "Removes any custom TDR delay and returns to the Windows default of 2 seconds.",
-      "tags": ["gpu", "restore"]
+      "tags": [
+        "gpu",
+        "restore"
+      ]
     },
     {
       "id": "gpu_route_emulator_to_dgpu",
@@ -211,10 +367,19 @@
       "family": "gpu",
       "risk": "moderate",
       "handler": "nvidia.set_emulator_gpu_preference",
-      "args": { "emulator": "gameloop", "preference": 2 },
-      "requires": { "platform": "win32", "emulator": "gameloop" },
+      "args": {
+        "emulator": "gameloop",
+        "preference": 2
+      },
+      "requires": {
+        "platform": "win32",
+        "emulator": "gameloop"
+      },
       "description": "Writes the same key the Windows Graphics settings page uses, for every emulator process found. The executable path comes from detection, never from this file.",
-      "tags": ["gpu", "gameloop"]
+      "tags": [
+        "gpu",
+        "gameloop"
+      ]
     },
     {
       "id": "gpu_report_driver",
@@ -222,21 +387,33 @@
       "family": "gpu",
       "risk": "safe",
       "handler": "nvidia.report_driver",
-      "requires": { "platform": "win32", "gpu_vendor": "nvidia" },
+      "requires": {
+        "platform": "win32",
+        "gpu_vendor": "nvidia"
+      },
       "description": "Driver version, memory and power limit via nvidia-smi. Read-only.",
-      "tags": ["gpu", "diagnostic"]
+      "tags": [
+        "gpu",
+        "diagnostic"
+      ]
     },
-
     {
       "id": "win_game_mode_on",
       "label": "Enable Game Mode",
       "family": "windows",
       "risk": "safe",
       "handler": "windows.set_game_mode",
-      "args": { "enabled": true },
-      "requires": { "platform": "win32" },
+      "args": {
+        "enabled": true
+      },
+      "requires": {
+        "platform": "win32"
+      },
       "description": "Lets Windows prioritise the foreground game over background work.",
-      "tags": ["windows", "scheduling"]
+      "tags": [
+        "windows",
+        "scheduling"
+      ]
     },
     {
       "id": "win_game_dvr_off",
@@ -244,10 +421,18 @@
       "family": "windows",
       "risk": "safe",
       "handler": "windows.set_game_dvr",
-      "args": { "enabled": false },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "enabled": false
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "Background capture costs frames continuously, even when the overlay is never shown.",
-      "tags": ["windows", "overhead"]
+      "tags": [
+        "windows",
+        "overhead"
+      ]
     },
     {
       "id": "win_fullscreen_exclusive",
@@ -255,10 +440,17 @@
       "family": "windows",
       "risk": "moderate",
       "handler": "windows.set_fullscreen_optimisations",
-      "args": { "mode": 2 },
-      "requires": { "platform": "win32" },
+      "args": {
+        "mode": 2
+      },
+      "requires": {
+        "platform": "win32"
+      },
       "description": "Removes a composition pass between the emulator and the display. Can occasionally cause alt-tab to be slower.",
-      "tags": ["windows", "presentation"]
+      "tags": [
+        "windows",
+        "presentation"
+      ]
     },
     {
       "id": "win_mmcss_games",
@@ -266,10 +458,20 @@
       "family": "windows",
       "risk": "moderate",
       "handler": "windows.set_mmcss_games",
-      "args": { "system_responsiveness": 10, "gpu_priority": 8, "priority": 6 },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "system_responsiveness": 10,
+        "gpu_priority": 8,
+        "priority": 6
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "description": "Raises MMCSS GPU priority, thread priority and I/O priority for the Games task, and lifts the network throughput cap that applies while multimedia is active.",
-      "tags": ["windows", "scheduling"]
+      "tags": [
+        "windows",
+        "scheduling"
+      ]
     },
     {
       "id": "win_visual_fx_performance",
@@ -277,10 +479,17 @@
       "family": "windows",
       "risk": "safe",
       "handler": "windows.set_visual_effects",
-      "args": { "performance": true },
-      "requires": { "platform": "win32" },
+      "args": {
+        "performance": true
+      },
+      "requires": {
+        "platform": "win32"
+      },
       "description": "Disables window animations and shadows. Purely cosmetic change, small overhead reduction.",
-      "tags": ["windows", "cosmetic"]
+      "tags": [
+        "windows",
+        "cosmetic"
+      ]
     },
     {
       "id": "win_pointer_raw",
@@ -288,10 +497,17 @@
       "family": "windows",
       "risk": "safe",
       "handler": "windows.set_pointer_acceleration",
-      "args": { "disabled": true },
-      "requires": { "platform": "win32" },
+      "args": {
+        "disabled": true
+      },
+      "requires": {
+        "platform": "win32"
+      },
       "description": "Gives 1:1 mouse movement. This changes aim feel rather than latency, but most players want it. Requires signing out to take effect.",
-      "tags": ["windows", "input"]
+      "tags": [
+        "windows",
+        "input"
+      ]
     },
     {
       "id": "win_power_throttling_off",
@@ -299,24 +515,38 @@
       "family": "windows",
       "risk": "aggressive",
       "handler": "windows.set_power_throttling",
-      "args": { "disabled": true },
-      "requires": { "platform": "win32", "elevated": true },
+      "args": {
+        "disabled": true
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
       "needs_reboot": true,
       "description": "Stops Windows demoting background threads. Helps an emulator whose helper threads get parked mid-frame, at the cost of battery life.",
       "default_enabled": false,
-      "tags": ["windows", "scheduling"]
+      "tags": [
+        "windows",
+        "scheduling"
+      ]
     },
-
     {
       "id": "gl_report_install",
       "label": "Report GameLoop install",
       "family": "gameloop",
       "risk": "safe",
       "handler": "gameloop.report_install",
-      "args": { "emulator": "gameloop" },
-      "requires": { "platform": "win32" },
+      "args": {
+        "emulator": "gameloop"
+      },
+      "requires": {
+        "platform": "win32"
+      },
       "description": "Install root, launcher, ADB path and total install size. Read-only.",
-      "tags": ["gameloop", "diagnostic"]
+      "tags": [
+        "gameloop",
+        "diagnostic"
+      ]
     },
     {
       "id": "gl_clear_cache",
@@ -324,11 +554,20 @@
       "family": "gameloop",
       "risk": "moderate",
       "handler": "gameloop.clear_cache",
-      "args": { "emulator": "gameloop", "dry_run": false },
-      "requires": { "platform": "win32", "emulator": "gameloop" },
+      "args": {
+        "emulator": "gameloop",
+        "dry_run": false
+      },
+      "requires": {
+        "platform": "win32",
+        "emulator": "gameloop"
+      },
       "description": "Deletes cache, temp, log and shader-cache folders inside the detected install. A stale shader cache after an update is a common cause of stutter. Not reversible - it is a cache.",
       "reversible": false,
-      "tags": ["gameloop", "maintenance"]
+      "tags": [
+        "gameloop",
+        "maintenance"
+      ]
     },
     {
       "id": "gl_no_autostart",
@@ -336,10 +575,18 @@
       "family": "gameloop",
       "risk": "safe",
       "handler": "gameloop.set_autostart",
-      "args": { "disabled": true, "emulator": "gameloop" },
-      "requires": { "platform": "win32" },
+      "args": {
+        "disabled": true,
+        "emulator": "gameloop"
+      },
+      "requires": {
+        "platform": "win32"
+      },
       "description": "Removes the Run entry so the emulator does not hold GPU and disk resources in the background.",
-      "tags": ["gameloop", "overhead"]
+      "tags": [
+        "gameloop",
+        "overhead"
+      ]
     },
     {
       "id": "gl_defender_exclusion",
@@ -347,22 +594,36 @@
       "family": "gameloop",
       "risk": "aggressive",
       "handler": "gameloop.set_defender_exclusion",
-      "args": { "add": true, "emulator": "gameloop" },
-      "requires": { "platform": "win32", "elevated": true, "emulator": "gameloop" },
+      "args": {
+        "add": true,
+        "emulator": "gameloop"
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true,
+        "emulator": "gameloop"
+      },
       "description": "Emulator disk I/O is heavy and constant, and real-time scanning of it is a measurable cost. The trade-off is real: files in that folder would go unscanned. Only do this for an install you trust.",
       "default_enabled": false,
-      "tags": ["gameloop", "security-tradeoff"]
+      "tags": [
+        "gameloop",
+        "security-tradeoff"
+      ]
     },
-
     {
       "id": "adb_report_devices",
       "label": "List connected emulator devices",
       "family": "adb",
       "risk": "safe",
       "handler": "adb.report_devices",
-      "requires": { "platform": "win32" },
+      "requires": {
+        "platform": "win32"
+      },
       "description": "Shows which emulators ADB can currently reach. The emulator must be running. Read-only.",
-      "tags": ["adb", "diagnostic"]
+      "tags": [
+        "adb",
+        "diagnostic"
+      ]
     },
     {
       "id": "adb_disable_animations",
@@ -370,9 +631,14 @@
       "family": "adb",
       "risk": "safe",
       "handler": "adb.disable_guest_animations",
-      "requires": { "platform": "win32" },
+      "requires": {
+        "platform": "win32"
+      },
       "description": "Sets all three Android animation scales to zero inside the emulator. The guest UI stops waiting on transitions. Reverted by a factory reset of the emulator.",
-      "tags": ["adb", "responsiveness"]
+      "tags": [
+        "adb",
+        "responsiveness"
+      ]
     },
     {
       "id": "adb_touches_off",
@@ -380,10 +646,309 @@
       "family": "adb",
       "risk": "safe",
       "handler": "adb.set_guest_setting",
-      "args": { "namespace": "system", "key": "show_touches", "value": "0" },
-      "requires": { "platform": "win32" },
+      "args": {
+        "namespace": "system",
+        "key": "show_touches",
+        "value": "0"
+      },
+      "requires": {
+        "platform": "win32"
+      },
       "description": "Turns off the on-screen touch indicators, which draw on every tap.",
-      "tags": ["adb", "overhead"]
+      "tags": [
+        "adb",
+        "overhead"
+      ]
+    },
+    {
+      "id": "net_dns_google",
+      "label": "Use Google DNS (8.8.8.8)",
+      "family": "network",
+      "risk": "moderate",
+      "handler": "network.set_static_dns",
+      "args": {
+        "primary": "8.8.8.8",
+        "secondary": "8.8.4.4"
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "default_enabled": false,
+      "tags": [
+        "network",
+        "dns"
+      ],
+      "description": "Sets a static resolver on every active physical adapter. Undo returns the adapter to DHCP-assigned DNS."
+    },
+    {
+      "id": "net_dns_quad9",
+      "label": "Use Quad9 DNS (9.9.9.9)",
+      "family": "network",
+      "risk": "moderate",
+      "handler": "network.set_static_dns",
+      "args": {
+        "primary": "9.9.9.9",
+        "secondary": "149.112.112.112"
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "default_enabled": false,
+      "tags": [
+        "network",
+        "dns"
+      ],
+      "description": "Quad9 blocks known-malicious domains at the resolver. Undo returns the adapter to DHCP-assigned DNS."
+    },
+    {
+      "id": "net_dns_opendns",
+      "label": "Use OpenDNS (208.67.222.222)",
+      "family": "network",
+      "risk": "moderate",
+      "handler": "network.set_static_dns",
+      "args": {
+        "primary": "208.67.222.222",
+        "secondary": "208.67.220.220"
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "default_enabled": false,
+      "tags": [
+        "network",
+        "dns"
+      ],
+      "description": "Sets a static resolver on every active physical adapter. Undo returns the adapter to DHCP-assigned DNS."
+    },
+    {
+      "id": "net_dns_adguard",
+      "label": "Use AdGuard DNS (94.140.14.14)",
+      "family": "network",
+      "risk": "moderate",
+      "handler": "network.set_static_dns",
+      "args": {
+        "primary": "94.140.14.14",
+        "secondary": "94.140.15.15"
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "default_enabled": false,
+      "tags": [
+        "network",
+        "dns"
+      ],
+      "description": "AdGuard DNS blocks ad and tracker domains at the resolver. Undo returns the adapter to DHCP-assigned DNS."
+    },
+    {
+      "id": "net_ecn",
+      "label": "Enable ECN (Explicit Congestion Notification)",
+      "family": "network",
+      "risk": "moderate",
+      "handler": "network.set_ecn",
+      "args": {
+        "capability": "enabled"
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "tags": [
+        "network"
+      ],
+      "description": "Lets routers signal congestion before dropping packets. Can help on congested wired networks; on others it makes no difference."
+    },
+    {
+      "id": "net_rss",
+      "label": "Enable Receive-Side Scaling (RSS)",
+      "family": "network",
+      "risk": "moderate",
+      "handler": "network.set_rss",
+      "args": {
+        "state": "enabled"
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "tags": [
+        "network"
+      ],
+      "description": "Spreads network interrupts across CPU cores instead of funnelling them onto one. Helps under heavy network load."
+    },
+    {
+      "id": "net_export_dns_snapshot",
+      "label": "Export DNS snapshot (read-only)",
+      "family": "network",
+      "risk": "safe",
+      "handler": "network.export_dns_snapshot",
+      "requires": {
+        "platform": "win32"
+      },
+      "default_enabled": false,
+      "reversible": false,
+      "tags": [
+        "network",
+        "audit"
+      ],
+      "description": "Writes the current DNS settings of every active adapter to a JSON file in the data folder. Changes nothing else."
+    },
+    {
+      "id": "power_hibernate_off",
+      "label": "Turn off hibernate",
+      "family": "power",
+      "risk": "moderate",
+      "handler": "power.set_hibernate",
+      "args": {
+        "enabled": false
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "tags": [
+        "power"
+      ],
+      "description": "Deletes hiberfil.sys and frees gigabytes of disk. Re-enable any time from the same action, or by running powercfg /hibernate on."
+    },
+    {
+      "id": "win_foreground_lock_timeout",
+      "label": "Let windows take focus immediately",
+      "family": "windows",
+      "risk": "safe",
+      "handler": "windows.set_foreground_lock_timeout",
+      "args": {
+        "timeout_ms": 0
+      },
+      "requires": {
+        "platform": "win32"
+      },
+      "tags": [
+        "windows",
+        "input"
+      ],
+      "description": "Removes the wait a window must observe before it may steal focus. Keeps the emulator responsive when it relaunches."
+    },
+    {
+      "id": "win_background_apps_off",
+      "label": "Stop Store apps running in the background",
+      "family": "windows",
+      "risk": "moderate",
+      "handler": "windows.set_background_apps",
+      "args": {
+        "disabled": true
+      },
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "tags": [
+        "windows",
+        "privacy"
+      ],
+      "description": "Force-denies background execution for Store apps. Removing the policy restores the default behaviour."
+    },
+    {
+      "id": "win_menu_delay",
+      "label": "Open menus instantly",
+      "family": "windows",
+      "risk": "safe",
+      "handler": "windows.set_menu_show_delay",
+      "args": {
+        "delay_ms": 0
+      },
+      "requires": {
+        "platform": "win32"
+      },
+      "tags": [
+        "windows",
+        "ui"
+      ],
+      "description": "Sets the menu open delay to 0 ms. Makes right-click menus everywhere feel instant."
+    },
+    {
+      "id": "clean_user_temp",
+      "label": "Clean user temp folder",
+      "family": "cleanup",
+      "risk": "moderate",
+      "handler": "cleanup.clean_user_temp",
+      "requires": {
+        "platform": "win32"
+      },
+      "reversible": false,
+      "tags": [
+        "cleanup"
+      ],
+      "description": "Deletes junk in %TEMP%. Anything in use right now is skipped. Nothing here can be restored."
+    },
+    {
+      "id": "clean_windows_temp",
+      "label": "Clean Windows temp folder",
+      "family": "cleanup",
+      "risk": "aggressive",
+      "handler": "cleanup.clean_windows_temp",
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "reversible": false,
+      "tags": [
+        "cleanup"
+      ],
+      "description": "Deletes junk in C:\\Windows\\Temp. Anything in use right now is skipped. Nothing here can be restored.",
+      "default_enabled": false
+    },
+    {
+      "id": "clean_crash_dumps",
+      "label": "Delete crash dumps and WER reports",
+      "family": "cleanup",
+      "risk": "moderate",
+      "handler": "cleanup.clean_crash_dumps",
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "reversible": false,
+      "tags": [
+        "cleanup"
+      ],
+      "description": "Removes Windows Error Reporting archives and Minidump files. You lose nothing you will need."
+    },
+    {
+      "id": "clean_prefetch",
+      "label": "Clear prefetch files",
+      "family": "cleanup",
+      "risk": "moderate",
+      "handler": "cleanup.clean_prefetch",
+      "requires": {
+        "platform": "win32",
+        "elevated": true
+      },
+      "reversible": false,
+      "tags": [
+        "cleanup"
+      ],
+      "description": "Deletes *.pf prefetch history. Windows rebuilds it; the first launch of each app is a bit slower afterwards."
+    },
+    {
+      "id": "clean_shader_caches",
+      "label": "Clear GPU shader caches",
+      "family": "cleanup",
+      "risk": "moderate",
+      "handler": "cleanup.clean_shader_caches",
+      "requires": {
+        "platform": "win32"
+      },
+      "reversible": false,
+      "tags": [
+        "cleanup",
+        "gpu"
+      ],
+      "description": "Deletes NVIDIA and AMD shader caches. They rebuild on first use; expect a brief stutter until they do."
     }
   ]
 }
