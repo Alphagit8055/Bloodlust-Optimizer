@@ -438,12 +438,46 @@ function renderUndo() {
 
 function showView(name) {
   state.view = name;
-  for (const v of ["actions", "undo", "about", "log"]) {
+  for (const v of ["actions", "undo", "about", "log", "contact"]) {
     $("view-" + v).hidden = v !== name;
   }
   if (name === "undo") renderUndo();
   if (name === "about") renderAbout();
   if (name === "log") renderLog();
+}
+
+const TELEGRAM_LINK = "https://t.me/Alpha0NemesiSS";
+
+async function copyTelegramLink(btn) {
+  try {
+    await navigator.clipboard.writeText(TELEGRAM_LINK);
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = TELEGRAM_LINK;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch {}
+    ta.remove();
+  }
+  const original = btn.innerHTML;
+  btn.textContent = "Copied!";
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.innerHTML = original;
+    btn.disabled = false;
+  }, 1800);
+  toast("Link copied: " + TELEGRAM_LINK, "ok");
+}
+
+function openTelegram() {
+  // External navigation is not allowed from the webview; the default browser
+  // is the right place for Telegram. If the platform refuses, the handle and
+  // the QR remain on screen.
+  try {
+    const win = window.open(TELEGRAM_LINK, "_blank", "noopener");
+    if (win) return;
+  } catch {}
+  toast("Couldn't open the browser — scan the QR or type t.me/Alpha0NemesiSS", "warn", 6000);
 }
 
 async function renderAbout() {
@@ -562,6 +596,10 @@ async function main() {
   };
   $("lnk-about").onclick = (e) => { e.preventDefault(); showView("about"); };
   $("lnk-log").onclick = (e) => { e.preventDefault(); showView("log"); };
+  $("btn-contact").onclick = (e) => { e.preventDefault(); showView("contact"); };
+  $("lnk-contact").onclick = (e) => { e.preventDefault(); showView("contact"); };
+  $("btn-copy-telegram").onclick = () => copyTelegramLink($("btn-copy-telegram"));
+  $("btn-open-telegram").onclick = openTelegram;
   $("dlg-close").onclick = () => $("result-dialog").close();
 
   for (const btn of document.querySelectorAll(".risk-opt")) {

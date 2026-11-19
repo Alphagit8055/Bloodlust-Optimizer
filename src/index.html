@@ -9,68 +9,116 @@
 <body>
 
 <div id="boot" class="boot">
-  <div class="boot-mark">BLOODLUST</div>
-  <div class="boot-sub" id="boot-status">starting the tuning engine&hellip;</div>
+  <div class="boot-mark">
+    <svg viewBox="0 0 48 48" width="72" height="72" aria-hidden="true">
+      <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#bg)"/>
+      <path d="M27.6 7L13.5 27.2h8.6L17.6 41l15.2-20.2h-8.6L27.6 7z" fill="#FFF7EF"/>
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#F37338"/>
+          <stop offset="1" stop-color="#CF4500"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+  <div class="boot-word">BLOODLUST</div>
+  <div class="boot-sub" id="boot-status">starting the tuning engine…</div>
+  <div class="boot-bar"><div class="boot-bar-fill"></div></div>
 </div>
 
 <div id="app" class="app" hidden>
 
-  <header class="topbar">
+  <aside class="sidebar">
     <div class="brand">
-      <span class="brand-mark">BLOODLUST</span>
-      <span class="brand-sub">OPTIMIZER</span>
+      <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true">
+        <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#bg2)"/>
+        <path d="M27.6 7L13.5 27.2h8.6L17.6 41l15.2-20.2h-8.6L27.6 7z" fill="#FFF7EF"/>
+        <defs>
+          <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#F37338"/>
+            <stop offset="1" stop-color="#CF4500"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="brand-text">
+        <div class="brand-name">BLOODLUST</div>
+        <div class="brand-sub">OPTIMIZER</div>
+      </div>
     </div>
 
-    <div class="sysline" id="sysline">
-      <span class="dot" id="engine-dot"></span>
-      <span id="sys-text">connecting&hellip;</span>
-    </div>
-
-    <div class="topbar-actions">
-      <button class="btn ghost" id="btn-refresh-catalog" title="Fetch the latest catalog from GitHub">Sync catalog</button>
-      <button class="btn ghost" id="btn-undo" title="Everything you can revert">Undo<span class="badge" id="undo-count" hidden>0</span></button>
-    </div>
-  </header>
-
-  <div class="body">
-
-    <nav class="sidebar">
-      <div class="side-section" id="family-list"></div>
-
-      <div class="side-section">
-        <div class="side-title">Risk ceiling</div>
-        <div class="risk-picker" id="risk-picker">
-          <button data-ceiling="safe" class="risk-opt on">Safe</button>
-          <button data-ceiling="moderate" class="risk-opt">Moderate</button>
-          <button data-ceiling="aggressive" class="risk-opt">Aggressive</button>
-          <button data-ceiling="danger" class="risk-opt">Danger</button>
-        </div>
-        <p class="hint">
-          Anything above this level refuses to run, even from a batch. Undo always works.
-        </p>
-      </div>
-
-      <div class="side-section">
-        <div class="side-title">Catalog</div>
-        <div class="prov" id="provenance">not loaded</div>
-      </div>
-
-      <div class="side-foot">
-        <a href="#" id="lnk-about">About</a>
-        <a href="#" id="lnk-log">Engine log</a>
-      </div>
+    <nav class="side-section">
+      <div class="side-title">Actions</div>
+      <div id="family-list" class="family-list"></div>
     </nav>
+
+    <div class="side-section">
+      <div class="side-title">Risk ceiling</div>
+      <div class="risk-picker" id="risk-picker">
+        <button data-ceiling="safe" class="risk-opt on"><span class="risk-dot safe"></span>Safe</button>
+        <button data-ceiling="moderate" class="risk-opt"><span class="risk-dot moderate"></span>Moderate</button>
+        <button data-ceiling="aggressive" class="risk-opt"><span class="risk-dot aggressive"></span>Aggressive</button>
+        <button data-ceiling="danger" class="risk-opt"><span class="risk-dot danger"></span>Danger</button>
+      </div>
+      <p class="hint">Everything above your ceiling refuses to run — even from a batch. Undo always works.</p>
+    </div>
+
+    <div class="side-section">
+      <div class="side-title">Catalog</div>
+      <div class="prov" id="provenance">not loaded</div>
+    </div>
+
+    <div class="side-foot">
+      <button class="side-link" id="lnk-about">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="1.1" fill="currentColor"/></svg>
+        About
+      </button>
+      <button class="side-link" id="lnk-log">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 7l5 5-5 5M11 17h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Engine log
+      </button>
+      <button class="side-link contact" id="lnk-contact">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M21 4L3 11.2l6.6 2.7L12.4 21l2.8-5.4L21 4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        Contact me
+        <span class="side-chevron">›</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="content">
+    <header class="topbar">
+      <div class="sysline" id="sysline">
+        <span class="dot" id="engine-dot"></span>
+        <span class="sys-text" id="sys-text">connecting…</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn ghost" id="btn-refresh-catalog" title="Fetch the latest catalog from GitHub">
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Sync catalog
+        </button>
+        <button class="btn ghost" id="btn-undo" title="Everything you can revert">
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M9 14l-5-5 5-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10a5 5 0 0 1 0 10h-3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Undo<span class="badge" id="undo-count" hidden>0</span>
+        </button>
+        <button class="btn accent" id="btn-contact" title="Ping me on Telegram">
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M21 4L3 11.2l6.6 2.7L12.4 21l2.8-5.4L21 4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          Contact me
+        </button>
+      </div>
+    </header>
 
     <main class="main">
 
       <section id="view-actions" class="view">
         <div class="view-head">
-          <h1 id="family-title">System Report</h1>
-          <p id="family-desc" class="lede"></p>
+          <div class="view-heading">
+            <span class="eyebrow"><span class="eyebrow-dot"></span>Tuning library</span>
+            <h1 id="family-title">System Report</h1>
+            <p class="lede" id="family-desc"></p>
+          </div>
           <div class="batch-bar">
-            <button class="btn" id="btn-preview-all">Preview all safe</button>
-            <button class="btn danger-soft" id="btn-run-all">Run all safe</button>
-            <span class="muted" id="batch-note"></span>
+            <button class="btn soft" id="btn-preview-all">Preview all</button>
+            <button class="btn primary" id="btn-run-all">Apply all</button>
+            <span class="muted batch-note" id="batch-note"></span>
           </div>
         </div>
         <div id="action-list" class="cards"></div>
@@ -78,30 +126,68 @@
 
       <section id="view-undo" class="view" hidden>
         <div class="view-head">
-          <h1>Undo</h1>
-          <p class="lede">
-            Every change is journaled before it is written. Reverting an action restores the
-            exact values that were there before you first applied it &mdash; not the values from
-            the last time you ran it.
-          </p>
+          <div class="view-heading">
+            <span class="eyebrow"><span class="eyebrow-dot"></span>Safety net</span>
+            <h1>Undo</h1>
+            <p class="lede">
+              Every change is journaled before it is written. Reverting replays the journal — you return
+              to the state before the first application, not the last one.
+            </p>
+          </div>
           <div class="batch-bar">
-            <button class="btn" id="btn-undo-all">Revert everything</button>
+            <button class="btn primary danger-soft" id="btn-undo-all">Revert everything</button>
           </div>
         </div>
         <div id="undo-list" class="cards"></div>
       </section>
 
       <section id="view-about" class="view" hidden>
-        <div class="view-head"><h1>About</h1></div>
+        <div class="view-head">
+          <div class="view-heading">
+            <span class="eyebrow"><span class="eyebrow-dot"></span>About</span>
+            <h1>Bloodlust Optimizer</h1>
+          </div>
+        </div>
         <div class="about" id="about-body"></div>
       </section>
 
       <section id="view-log" class="view" hidden>
         <div class="view-head">
-          <h1>Engine log</h1>
-          <p class="lede">The last messages from the tuning engine. Useful when reporting a bug.</p>
+          <div class="view-heading">
+            <span class="eyebrow"><span class="eyebrow-dot"></span>Diagnostics</span>
+            <h1>Engine log</h1>
+            <p class="lede">The last messages from the tuning engine. Handy when reporting a bug.</p>
+          </div>
         </div>
         <pre id="log-body" class="logbox"></pre>
+      </section>
+
+      <section id="view-contact" class="view" hidden>
+        <div class="contact-wrap">
+          <div class="contact-copy">
+            <span class="eyebrow"><span class="eyebrow-dot"></span>Contact</span>
+            <h1>Talk to the builder.</h1>
+            <p class="lede">
+              Found a bug, a missing tweak, or a tweak that should not be there? Want Bloodlust tuned
+              for your own machine? Scan the QR with your phone or open the handle directly —
+              it lands straight in my Telegram.
+            </p>
+            <div class="contact-actions">
+              <button class="btn accent big" id="btn-open-telegram">
+                <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M21 4L3 11.2l6.6 2.7L12.4 21l2.8-5.4L21 4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                t.me/Alpha0NemesiSS
+              </button>
+              <button class="btn soft" id="btn-copy-telegram">
+                <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 15V5a2 2 0 0 1 2-2h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                Copy link
+              </button>
+            </div>
+            <p class="contact-note">Handle: <code>@Alpha0NemesiSS</code></p>
+          </div>
+          <div class="contact-qr">
+            <img src="assets/telegram-qr.png" alt="Telegram QR code for @Alpha0NemesiSS" />
+          </div>
+        </div>
       </section>
 
     </main>
@@ -113,7 +199,7 @@
     <h2 id="dlg-title">Result</h2>
     <div id="dlg-body"></div>
     <div class="dlg-actions">
-      <button class="btn" id="dlg-close">Close</button>
+      <button class="btn accent" id="dlg-close">Close</button>
     </div>
   </dialog>
 
