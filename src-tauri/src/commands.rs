@@ -372,7 +372,9 @@ pub async fn engine_status(state: State<'_, AppState>) -> Result<Value> {
 /// Concrete `Wry` runtime throughout: `AppHandle` in the commands defaults to
 /// `Wry`, and a generic `R: Runtime` here would let the handler demand
 /// `CommandArg` for an arbitrary runtime, which the commands never satisfy.
-pub fn register_handlers(builder: tauri::Builder) -> tauri::Builder {
+pub fn register_handlers(
+    builder: tauri::Builder<tauri::Wry>,
+) -> tauri::Builder<tauri::Wry> {
     builder
         .manage(AppState::new())
         .invoke_handler(tauri::generate_handler![
