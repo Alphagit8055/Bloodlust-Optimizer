@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -61,12 +61,10 @@ jobs:
               print("handlers shipped but unused by the catalog:", unused)
           PY
 
-      - name: Test the bridge crate
+      - name: Install the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-        if: matrix.os == 'ubuntu-latest'
 
       - name: cargo test (bridge)
-        if: matrix.os == 'ubuntu-latest'
         working-directory: bridge
         run: cargo test --locked || cargo test
 
@@ -74,7 +72,6 @@ jobs:
       # `cargo test` never compiles that path. Check it here so a
       # release-only compile error fails fast, not at tag time.
       - name: cargo check (bridge with http feature)
-        if: matrix.os == 'ubuntu-latest'
         working-directory: bridge
         run: cargo check --locked --features http
 

@@ -6,8 +6,8 @@ description = "Wire protocol and catalog verification for Bloodlust Optimizer"
 license = "MIT"
 
 # This crate deliberately has NO Tauri dependency. That keeps the JSON-RPC
-# client and the catalog verifier compilable and testable on any platform,
-# including CI on Linux, without needing webkit or a display server.
+# client and the catalog verifier compilable and testable without needing
+# webkit or a display server.
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }

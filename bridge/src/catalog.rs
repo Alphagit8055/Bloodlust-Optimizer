@@ -107,6 +107,8 @@ pub fn sha256_hex(bytes: &[u8]) -> String {
 /// Fetch and verify. Requires the `http` feature; the Tauri shell enables it.
 #[cfg(feature = "http")]
 pub fn fetch(url: &str, allowed_hosts: &[&str]) -> Result<CatalogPayload, CatalogError> {
+    use std::io::Read;
+
     validate_url(url, allowed_hosts)?;
 
     let agent = ureq::builder()
@@ -134,7 +136,6 @@ pub fn fetch(url: &str, allowed_hosts: &[&str]) -> Result<CatalogPayload, Catalo
     let mut bytes = Vec::with_capacity(declared.unwrap_or(64 * 1024).min(MAX_CATALOG_BYTES));
     let mut buf = vec![0u8; READ_CHUNK];
     loop {
-        use std::io::Read;
         let n = reader
             .read(&mut buf)
             .map_err(|e| CatalogError::Fetch(e.to_string()))?;
